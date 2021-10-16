@@ -1,0 +1,44 @@
+site_name: Bandsaw documentation
+site_url: https://docs.kant.ai/bandsaw/
+repo_url: https://gitlab.com/kantai/bandsaw/
+site_dir: build
+nav:
+    - Home: index.md
+    - Getting started: getting_started.md
+    - FAQ: faq.md
+    - About: about.md
+    - API: api.md
+theme:
+  name: material
+  custom_dir: docs/overrides
+  features:
+    - navigation.tracking
+  icon:
+    repo: fontawesome/brands/gitlab
+  palette:
+    scheme: kantai
+
+extra_javascript:
+    -
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  analytics:
+    provider: plausible
+    domain: docs.kant.ai
+  homepage: https://kant.ai
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/kantaiML
+      name: kantai on Twitter
+
+copyright: Copyright &copy; 2021 Kantai GmbH
+
+plugins:
+- git-revision-date
+- mkdocstrings
+- search
+
+
+# Enable versioning later: https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
