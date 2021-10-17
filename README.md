@@ -1,5 +1,8 @@
 # Bandsaw
 
+ [![pipeline status](https://gitlab.com/kantai/bandsaw/badges/mainline/pipeline.svg)](https://gitlab.com/kantai/bandsaw/-/commits/mainline)
+ [![coverage report](https://gitlab.com/kantai/bandsaw/badges/mainline/coverage.svg)](https://gitlab.com/kantai/bandsaw/-/commits/mainline)
+
 Bandsaw is a python library that allows to split a python script into individual tasks
 that can be run separately with different python interpreters and even on different
 machines.
@@ -35,7 +38,7 @@ When this decorated function is called, bandsaw intercepts the call first and ru
 `before()` methods of the configured `Advice`s. Then the wrapped function is computed
 and afterwards each advice's `after()` method is called.
 
-![Diagram of an advised call](Session.svg)
+![Diagram of an advised call](docs/Session.svg)
 
 All callback functions receive a [`Session`](bandsaw/session.py) object as single
 argument, which is used for continuing the execution by calling its `proceed()` method.
