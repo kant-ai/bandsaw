@@ -2,7 +2,7 @@
 image: registry.gitlab.com/python-devs/ci-images:active
 
 stages:
-  - docs
+  - build
   - tests
   - deploy
 
