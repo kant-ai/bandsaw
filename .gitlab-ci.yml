@@ -21,6 +21,9 @@ test:
   script: 
     - pip --quiet install tox
     - tox
+  artifacts:
+    reports:
+     cobertura: 'coverage.xml'
 
 deploy docs:
   needs: ["create docs"]
