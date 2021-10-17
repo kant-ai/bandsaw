@@ -1,0 +1,41 @@
+# using image from https://gitlab.com/python-devs/ci-images/-/tree/main
+image: registry.gitlab.com/python-devs/ci-images:active
+
+stages:
+  - docs
+  - tests
+  - deploy
+
+create docs:
+  stage: build
+  script:
+    - pip --quiet install tox
+    - tox -e docs
+  artifacts:
+    paths:
+    - build
+
+test:
+  stage: tests
+  coverage: '/^TOTAL\s+\d+\s+\d+\s+(\d+\%)$/'
+  script: 
+    - pip --quiet install tox
+    - tox
+
+deploy docs:
+  needs: ["create docs"]
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  only:
+    - /^(v|V)?(\d+)(\.\d+)+?$/
+  script:
+    - aws --version
+    - aws s3 sync build/ s3://$AWS_S3_BUCKET/bandsaw/ --size-only
+
+pypi:
+  stage: deploy
+  only:
+    - /^(v|V)?(\d+)(\.\d+)+?$/
+  script:
+    - pip --quiet install flit
+    - flit publish --repository pypitest
