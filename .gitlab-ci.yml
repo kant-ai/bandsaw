@@ -17,7 +17,7 @@ create docs:
 
 test:
   stage: tests
-  coverage: '/^TOTAL\s+\d+\s+\d+\s+(\d+\%)$/'
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
   script: 
     - pip --quiet install tox
     - tox
