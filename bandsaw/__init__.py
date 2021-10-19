@@ -1,5 +1,4 @@
 """A library for splitting python scripts into separate tasks"""
-
 from .advice import Advice
 from .config import Configuration, get_configuration
 from .decorator import task
@@ -13,4 +12,4 @@ from .serialization import (
 )
 
 
-__version__ = "0.1-dev"
+__version__ = "0.1.dev"

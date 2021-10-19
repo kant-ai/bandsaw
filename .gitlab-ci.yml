@@ -26,19 +26,18 @@ test:
      cobertura: 'coverage.xml'
 
 deploy docs:
-  needs: ["create docs"]
   stage: deploy
   image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
-  only:
-    - /^(v|V)?(\d+)(\.\d+)+?$/
   script:
     - aws --version
     - aws s3 sync build/ s3://$AWS_S3_BUCKET/bandsaw/ --size-only
+ only:
+    - docs-deployment
 
 pypi:
   stage: deploy
   only:
-    - /^(v|V)?(\d+)(\.\d+)+?$/
+    - tags
   script:
     - pip --quiet install flit
     - flit publish --repository pypitest

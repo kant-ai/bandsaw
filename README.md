@@ -66,7 +66,17 @@ Afterwards the tests can be run by just calling
 tox
 ```
 
-from the project directory.
+from the project directory. For this to work, you need to have multiple python
+interpreters installed. If you don't want to run the tests on all supported platforms
+just edit the tox.ini file and set
+```
+envlist = py36,py37,py38
+```
+to contain only the python version you want to use. Another option is to run tox with
+the additional command line argument
+['--skip_missing_interpreters'](https://tox.wiki/en/latest/config.html#conf-skip_missing_interpreters)
+which skips python versions that aren't installed.
+
 
 ## Documentation
 
