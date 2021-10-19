@@ -31,7 +31,7 @@ deploy docs:
   script:
     - aws --version
     - aws s3 sync build/ s3://$AWS_S3_BUCKET/bandsaw/ --size-only
- only:
+  only:
     - docs-deployment
 
 pypi:
