@@ -2,18 +2,8 @@
 image: registry.gitlab.com/python-devs/ci-images:active
 
 stages:
-  - build
   - tests
   - deploy
-
-create docs:
-  stage: build
-  script:
-    - pip --quiet install tox
-    - tox -e docs
-  artifacts:
-    paths:
-    - build
 
 test:
   stage: tests
@@ -24,15 +14,6 @@ test:
   artifacts:
     reports:
      cobertura: 'coverage.xml'
-
-deploy docs:
-  stage: deploy
-  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
-  script:
-    - aws --version
-    - aws s3 sync build/ s3://$AWS_S3_BUCKET/bandsaw/ --size-only
-  only:
-    - docs-deployment
 
 pypi:
   stage: deploy
