@@ -17,6 +17,8 @@ theme:
     repo: fontawesome/brands/gitlab
   palette:
     scheme: kantai
+  logo: icon_white.svg
+  favicon: favicon.svg
 
 extra_javascript:
     -
@@ -41,5 +43,3 @@ plugins:
   - git-revision-date
   - mkdocstrings
   - search
-
-# Enable versioning later: https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/

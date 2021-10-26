@@ -48,6 +48,8 @@ Additionally, the session can be serialized and transferred to other python
 processes even on other machines using its `save(stream)` and `restore(stream)`
 methods.
 
+A full explanation of this can be found in the latest [user guide](https://docs.kant.ai/bandsaw/getting_started).
+
 
 ## Develop
 
@@ -80,18 +82,19 @@ which skips python versions that aren't installed.
 
 ## Documentation
 
-The latest documentation can always be found under https://docs.kant.ai/bandsaw/latest.
+The latest version of the documentation can always be found under https://docs.kant.ai/bandsaw/latest.
 The documentation is written in [Markdown](https://daringfireball.net/projects/markdown/)
-and can be found in the `docs` directory of the project. It can be built into static
-HTML by using [MkDocs](https://www.mkdocs.org/).
-
+and is located in the `docs` directory of the project.
+It can be built into static HTML by using [MkDocs](https://www.mkdocs.org/).
+In order to manually generate the documentation we can use tox to build the HTML pages from our markdown.
 
 ```bash
-pip install pdoc3
+tox -e docs
 ```
 
-
 ## Release
+
+### Releasing a new package version
 
 Releasing new versions of bandsaw is done using [flit](https://flit.readthedocs.io/en/latest/).
 
@@ -123,3 +126,22 @@ username: <my-test-user>
 ```bash
 flit publish --repository pypitest
 ```
+
+### Releasing a new version of the documentation
+
+The package uses [mike](https://github.com/jimporter/mike)
+to manage multiple versions of the documentation. The already generated documentation is kept
+in the `docs-deployment` branch and will be automatically deployed, if the branch is pushed to
+the repository.
+
+In order to build a new version of the documentation, we need to use the corresponding tox environment:
+
+```bash
+VERSION_TAG='<my-version>' tox -e docs-release
+```
+
+The `VERSION_TAG` environment variable should be set to the new version in format '<major>.<minor>'.
+This will build the documentation and add it as new commits to the `docs-deployment` branch.
+
+By pushing the updated branch to the gitlab repository, the documentation will be automatically
+deployed to [the official documentation website](https://docs.kant.ai/bandsaw).

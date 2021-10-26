@@ -2,13 +2,20 @@
 image: registry.gitlab.com/python-devs/ci-images:active
 
 stages:
+  - build
   - tests
   - deploy
+
+build docs:
+  stage: build
+  script:
+    - pip --quiet install tox
+    - tox -e docs
 
 test:
   stage: tests
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
-  script: 
+  script:
     - pip --quiet install tox
     - tox
   artifacts:
