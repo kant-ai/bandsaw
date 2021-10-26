@@ -28,4 +28,4 @@ pypi:
     - tags
   script:
     - pip --quiet install flit
-    - flit publish --repository pypitest
+    - flit publish
