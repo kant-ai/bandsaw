@@ -2,12 +2,21 @@ site_name: Bandsaw documentation
 site_url: https://docs.kant.ai/bandsaw/
 repo_url: https://gitlab.com/kantai/bandsaw/
 site_dir: build
+
 nav:
-    - Home: index.md
-    - Getting started: getting_started.md
-    - FAQ: faq.md
-    - About: about.md
-    - API: api.md
+  - Home: index.md
+  - Getting started: getting_started.md
+  - User guide: user_guide.md
+  - Advices:
+    - Caching: advices/caching.md
+    - Subprocess: advices/subprocess.md
+    - Remote: advices/remote.md
+    - Profiling: advices/profiling.md
+    - Async: advices/async.md
+  - FAQ: faq.md
+  - Changelog: changelog.md
+  - API: api.md
+
 theme:
   name: material
   custom_dir: docs/overrides
@@ -19,6 +28,15 @@ theme:
     scheme: kantai
   logo: icon_white.svg
   favicon: favicon.svg
+
+markdown_extensions:
+  - toc:
+      permalink: 🔗
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets
+
 
 extra_javascript:
     -

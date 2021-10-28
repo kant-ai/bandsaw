@@ -1,4 +1,4 @@
-"""A library for splitting python scripts into separate tasks"""
+"""A library for splitting python workflows into separate tasks"""
 from .advice import Advice
 from .config import Configuration, get_configuration
 from .decorator import task
