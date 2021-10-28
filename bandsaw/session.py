@@ -41,6 +41,11 @@ class Session:
         configuration=None,
         advice_chain='default',
     ):
+        """
+        Create a new session.
+
+
+        """
         self.task = task
         self.run = run
         self.context = {}
@@ -67,6 +72,12 @@ class Session:
             extension.on_before_advice(self.task, self.run, self.context)
 
         self.proceed()
+
+        if not self._moderator.is_finished:
+            raise RuntimeError(
+                f"Not all advice has been applied. "
+                f"Misbehaving advice {self._moderator.current_advice}"
+            )
 
         logger.debug("running extensions after advice")
         for extension in self._configuration.extensions:
@@ -206,9 +217,14 @@ class _Moderator(SerializableValue):
         self.before_called = 0
         self.after_called = 0
         self.task_called = False
+        self._is_finished = False
 
     def next(self, session):
         """Apply either next advice or execute the task execution."""
+
+        if self._is_finished:
+            raise RuntimeError("Session already finished advising.")
+
         if self.before_called < len(self.advice_chain):
             advice = self.advice_chain[self.before_called]
             self.before_called += 1
@@ -224,6 +240,9 @@ class _Moderator(SerializableValue):
             advice = self.advice_chain[advice_index]
             self.after_called += 1
             advice.after(session)
+
+        if self.after_called == len(self.advice_chain):
+            self._is_finished = True
 
     def skip(self, session):
         """
@@ -243,6 +262,35 @@ class _Moderator(SerializableValue):
                 logger.info("Next advice %s", next_advice)
 
         self.next(session)
+
+    @property
+    def current_advice(self):
+        """
+        The current advice that needs to be applied.
+
+        Returns:
+            Advice: The advice that needs to be applied, or `None`, if all advices
+                have been applied and the moderator `is_finished`.
+        """
+        if self.advice_chain:
+            if not self.task_called:
+                return self.advice_chain[self.before_called - 1]
+
+            if not self.is_finished:
+                advice_index = -self.after_called
+                return self.advice_chain[advice_index]
+        return None
+
+    @property
+    def is_finished(self):
+        """
+        Tells if the moderator has called all advices.
+
+        Returns:
+            boolean: `True` if all advices have been applied and the task was called,
+                otherwise `False`.
+        """
+        return self._is_finished
 
     def serialized(self):
         return {
