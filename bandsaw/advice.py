@@ -1,6 +1,4 @@
 """Contains classes and functions for advising tasks."""
-import typing_extensions
-
 from .session import Session
 
 
@@ -24,7 +22,7 @@ def advise_task_with_chain(task, run, configuration, advice_chain='default'):
     return session.initiate()
 
 
-class Advice(typing_extensions.Protocol):
+class Advice:
     """
     Interface that needs to be implemented by an advice.
 
@@ -36,7 +34,7 @@ class Advice(typing_extensions.Protocol):
     making changes to the result.
     """
 
-    def before(self, session):
+    def before(self, session):  # pylint: disable=R0201 # no-self-use
         """
         Called before the task is actually executed.
 
@@ -54,7 +52,7 @@ class Advice(typing_extensions.Protocol):
         """
         session.proceed()
 
-    def after(self, session):
+    def after(self, session):  # pylint: disable=R0201 # no-self-use
         """
         Called after the task is actually executed.
 
