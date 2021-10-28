@@ -24,6 +24,7 @@ test:
 
 pypi:
   stage: deploy
+  image: python
   only:
     - tags
   script:
