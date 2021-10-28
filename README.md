@@ -48,7 +48,7 @@ Additionally, the session can be serialized and transferred to other python
 processes even on other machines using its `save(stream)` and `restore(stream)`
 methods.
 
-A full explanation of this can be found in the latest [user guide](https://docs.kant.ai/bandsaw/getting_started).
+A full explanation of this can be found in the latest [user guide](https://docs.kant.ai/bandsaw/latest/user_guide/).
 
 
 ## Develop
