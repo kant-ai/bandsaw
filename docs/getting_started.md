@@ -35,7 +35,7 @@ additional logging when a task is executed:
 import bandsaw
 
 configuration = bandsaw.Configuration().add_advice_chain(
-    bandsaw.advices.logging.LoggingAdvice(),
+    bandsaw.advices.log.LoggingAdvice(),
 )
 
 ```
@@ -48,9 +48,9 @@ its `LoggingAdvice` prints out additional log messages `before()` and `after()` 
 ```bash
 $ python my_script.py
 ...
-2021-10-27 13:13:51,940  2290 bandsaw.advices.logging INFO: BEFORE 0d268ac0..4213:76560cb4..a37d with context {}
+2021-10-27 13:13:51,940  2290 bandsaw.advices.log INFO: BEFORE 0d268ac0..4213:76560cb4..a37d with context {}
 ...
-2021-10-27 13:13:52,127  2290 bandsaw.advices.logging INFO: AFTER 0d268ac0..4213:76560cb4..a37d with context {}
+2021-10-27 13:13:52,127  2290 bandsaw.advices.log INFO: AFTER 0d268ac0..4213:76560cb4..a37d with context {}
 ...
 ```
 

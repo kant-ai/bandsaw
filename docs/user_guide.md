@@ -166,7 +166,7 @@ keyword argument.
 ```python
 ...
 configuration.add_device_chain(
-    bandsaw.advices.logging.LoggingAdvice(),
+    bandsaw.advices.log.LoggingAdvice(),
 )
 ```
 
