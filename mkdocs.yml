@@ -47,7 +47,7 @@ extra:
   analytics:
     provider: plausible
     domain: docs.kant.ai
-  homepage: https://kant.ai
+  homepage: https://docs.kant.ai
   social:
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/kantaiML
