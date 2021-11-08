@@ -9,7 +9,7 @@ import tempfile
 
 from ..advice import Advice
 from ..interpreter import Interpreter
-from ..runner import main
+from ..runner import create_runner_archive
 
 
 logger = logging.getLogger(__name__)
@@ -48,22 +48,24 @@ class SubprocessAdvice(Advice):
         session_out_file, session_out_path = tempfile.mkstemp(
             '.zip', 'out-' + session_id + '-', self.directory
         )
+        archive_path = tempfile.mktemp('.pyz', 'archive-', self.directory)
 
         logger.info("Writing session to %s", session_in_path)
         with io.FileIO(session_in_file, mode='w') as stream:
             session.save(stream)
 
         logger.info(
-            "Continue session in subprocess using interpreter %s",
+            "Continue session in subprocess using interpreter %s and runner %s",
             self.interpreter.executable,
+            archive_path,
         )
         environment = self.interpreter.environment
         environment['PYTHONPATH'] = ':'.join(self.interpreter.path)
+        create_runner_archive(archive_path)
         subprocess.check_call(
             [
                 self.interpreter.executable,
-                '-m',
-                'bandsaw.advices.subprocess',
+                archive_path,
                 '--input',
                 session_in_path,
                 '--output',
@@ -84,7 +86,3 @@ class SubprocessAdvice(Advice):
         logger.info("after called in process %d", os.getpid())
         logger.info("Sub process created result %s", session.result)
         logger.info("Returning to end session and continue in parent")
-
-
-if __name__ == '__main__':
-    main()

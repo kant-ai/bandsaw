@@ -1,7 +1,7 @@
 import os
 import pathlib
 import shutil
-import unittest
+import unittest.mock
 
 from bandsaw.advices.subprocess import SubprocessAdvice
 from bandsaw.config import Configuration
@@ -55,6 +55,14 @@ class TestCachingAdvice(unittest.TestCase):
         path = pathlib.Path('/my/directory')
         the_advice = SubprocessAdvice(directory=path)
         self.assertEqual(the_advice.directory, path)
+
+    def test_after_does_not_proceed_or_conclude(self):
+        session_mock = unittest.mock.Mock()
+        the_advice = SubprocessAdvice()
+        the_advice.after(session_mock)
+
+        session_mock.proceed.assert_not_called()
+        session_mock.conclude.assert_not_called()
 
 
 if __name__ == '__main__':
