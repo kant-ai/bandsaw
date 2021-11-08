@@ -30,6 +30,7 @@ class Configuration:
         config_module_file_path = stack[0].filename
         self.module_name = get_loaded_module_name_by_path(config_module_file_path)
         logger.info("Config created in module: %s", self.module_name)
+        self.distribution_modules = []
 
     def add_advice_chain(self, *advices, name='default'):
         """
@@ -98,6 +99,21 @@ class Configuration:
                 added.
         """
         self.serializer = serializer
+        return self
+
+    def add_modules_for_distribution(self, *modules):
+        """
+        Add modules that should be included in the distribution archive.
+
+        Args:
+            *modules (List[str]): Positional arguments with strings, that contain the
+                names of modules, which should be included in the distribution
+                archive.
+
+        Returns:
+            bandsaw.config.Configuration: The configuration with the added modules.
+        """
+        self.distribution_modules.extend(modules)
         return self
 
 

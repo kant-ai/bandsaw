@@ -37,7 +37,7 @@ configuration.add_advice_chain(advice)
 configuration.set_serializer(JsonSerializer())
 
 
-class TestCachingAdvice(unittest.TestCase):
+class TestSubprocessAdvice(unittest.TestCase):
 
     @staticmethod
     def tearDownClass():

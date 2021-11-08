@@ -28,7 +28,10 @@ class Interpreter(SerializableValue):
             executable (str): The path to the python executable for this interpreter.
                 If `None` the current `sys.executable` is used.
         """
-        self._path = path or tuple(sys.path)
+        if path is None:
+            self._path = tuple(sys.path)
+        else:
+            self._path = tuple(path)
         self.executable = executable or sys.executable
         self._environment = {}
 
