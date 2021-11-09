@@ -92,7 +92,7 @@ class Session:
 
     @property
     def distribution_archive(self):
-        """The serializer that can be used for serializing values."""
+        """The DistributionArchive which can be used when transferring the session."""
         return get_distribution_archive(self._configuration)
 
     def proceed(self):
