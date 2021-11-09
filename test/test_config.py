@@ -7,6 +7,45 @@ from bandsaw.config import Configuration, get_configuration, CONFIGURATION_MODUL
 configuration = Configuration()
 
 
+class TestConfiguration(unittest.TestCase):
+
+    def test_configuration_can_be_used_as_dict_keys(self):
+        config = Configuration()
+
+        my_dict = {
+            config: 'value'
+        }
+        self.assertEqual(my_dict[config], 'value')
+
+    def test_configuration_with_same_name_are_equal(self):
+        config1 = Configuration()
+        config2 = Configuration()
+
+        self.assertEqual(config1, config2)
+
+    def test_configuration_with_different_name_are_not_equal(self):
+        config1 = Configuration()
+        config1.module_name = 'my_config'
+        config2 = Configuration()
+        config2.module_name = 'another_config'
+
+        self.assertNotEqual(config1, config2)
+
+    def test_configuration_with_same_name_have_same_hash(self):
+        config1 = Configuration()
+        config2 = Configuration()
+
+        self.assertEqual(hash(config1), hash(config2))
+
+    def test_configuration_with_different_name_are_not_equal(self):
+        config1 = Configuration()
+        config1.module_name = 'my_config'
+        config2 = Configuration()
+        config2.module_name = 'another_config'
+
+        self.assertNotEqual(hash(config1), hash(config2))
+
+
 class TestGetConfiguration(unittest.TestCase):
 
     def test_get_configuration_uses_default_module_name(self):

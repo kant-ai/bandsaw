@@ -116,6 +116,14 @@ class Configuration:
         self.distribution_modules.extend(modules)
         return self
 
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return self.module_name == other.module_name
+
+    def __hash__(self):
+        return hash(self.module_name)
+
 
 _configurations: typing.Dict[str, Configuration] = {}
 
