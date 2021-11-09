@@ -47,7 +47,7 @@ class SubprocessAdvice(Advice):
         session_out_file, session_out_path = tempfile.mkstemp(
             '.zip', 'out-' + session_id + '-', self.directory
         )
-        archive_path = session.distribution_archive_path
+        archive_path = session.distribution_archive.path
 
         logger.info("Writing session to %s", session_in_path)
         with io.FileIO(session_in_file, mode='w') as stream:

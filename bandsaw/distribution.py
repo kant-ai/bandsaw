@@ -9,6 +9,7 @@ additional dependencies.
 import logging
 import pathlib
 import sys
+import tempfile
 import zipfile
 
 
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     archive.writestr('__main__.py', main_module_contents)
 
 
-def create_distribution_archive(target_file, modules=None):
+def _create_distribution_archive(path, modules=None):
     """
     Create an distribution archive which can execute sessions.
 
@@ -65,14 +66,70 @@ def create_distribution_archive(target_file, modules=None):
     [1] https://docs.python.org/3/library/zipapp.html
 
     Args:
-        target_file (str): A path where the executable is written to.
+        path (pathlib.Path): A path where the executable is written to.
         modules (List[str]): A list of module names, that should be available to the
             executable. Defaults to `None` which doesn't add any additional packages.
     """
-    logger.info("Create distribution archive in file %s", target_file)
-
-    with zipfile.ZipFile(target_file, 'w') as archive:
-        _add_module_to_archive(sys.modules['bandsaw'], archive)
+    logger.info("Create distribution archive in file %s", path)
+    with zipfile.ZipFile(path, 'w') as archive:
         for module in modules or []:
             _add_module_to_archive(sys.modules[module], archive)
         _add_main_module(archive)
+
+
+def get_distribution_archive(configuration):
+    """
+    Returns a distribution archive for a given configuration.
+
+    Args:
+        configuration (bandsaw.config.Configuration): The configuration for which the
+            distribution package should be returned.
+
+    Returns:
+        bandsaw.distribution.DistributionArchive: The archive for the configuration.
+    """
+
+    archive_path = pathlib.Path(tempfile.mktemp(suffix='.pyz', prefix='distribution-'))
+    modules = [
+        '__main__',
+        'bandsaw',
+        configuration.module_name,
+        *configuration.distribution_modules,
+    ]
+    return DistributionArchive(archive_path, *modules)
+
+
+class DistributionArchive:
+    """
+    Class that represents a distribution archive.
+
+    A distribution archive contains all the code necessary for running a task. It can
+    be used for running a task on a different machine by copying over the archive.
+
+    Attributes:
+        path (pathlib.Path): The path to the file containing the code.
+    """
+
+    def __init__(self, path, *modules):
+        self._path = path
+        self.modules = modules
+
+    @property
+    def path(self):
+        """
+        Returns:
+            pathlib.Path: The path to the archive file. The file itself is created
+                lazily, when the path is accessed the first time. This makes sure,
+                we only create the archive if necessary.
+        """
+        if not self._path.exists():
+            _create_distribution_archive(self._path, self.modules)
+        return self._path
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return self.modules == other.modules
+
+    def __hash__(self):
+        return hash(self.modules)

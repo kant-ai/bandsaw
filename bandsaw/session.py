@@ -2,11 +2,10 @@
 import io
 import json
 import logging
-import tempfile
 import zipfile
 
 from .config import get_configuration
-from .distribution import create_distribution_archive
+from .distribution import get_distribution_archive
 from .serialization import SerializableValue
 
 
@@ -92,18 +91,9 @@ class Session:
         return self._configuration.serializer
 
     @property
-    def distribution_archive_path(self):
+    def distribution_archive(self):
         """The serializer that can be used for serializing values."""
-        runner_path = tempfile.mkstemp(suffix='.pyz', prefix='distribution')[1]
-        create_distribution_archive(
-            runner_path,
-            modules=[
-                '__main__',
-                self._configuration.module_name,
-                *self._configuration.distribution_modules,
-            ],
-        )
-        return runner_path
+        return get_distribution_archive(self._configuration)
 
     def proceed(self):
         """
