@@ -1,4 +1,5 @@
 import io
+import pickle
 import threading
 import unittest
 import unittest.mock
@@ -184,51 +185,64 @@ class MyAdvice2(Advice):
 class TestModerator(unittest.TestCase):
 
     def test_serialization(self):
-        queue = _Moderator()
-        queue.before_called = 2
-        queue.after_called = 1
-        queue.task_called = True
+        moderator = _Moderator()
+        moderator.before_called = 2
+        moderator.after_called = 1
+        moderator.task_called = True
 
-        serialized = queue.serialized()
+        serialized = moderator.serialized()
         deserialized = _Moderator.deserialize(serialized)
 
-        self.assertEqual(queue.before_called, deserialized.before_called)
-        self.assertEqual(queue.after_called, deserialized.after_called)
-        self.assertEqual(queue.task_called, deserialized.task_called)
+        self.assertEqual(moderator.before_called, deserialized.before_called)
+        self.assertEqual(moderator.after_called, deserialized.after_called)
+        self.assertEqual(moderator.task_called, deserialized.task_called)
 
     def test_current_advice_is_before(self):
-        queue = _Moderator([MyAdvice1(), MyAdvice2()])
-        queue.before_called = 1
-        queue.after_called = 0
-        queue.task_called = False
+        moderator = _Moderator([MyAdvice1(), MyAdvice2()])
+        moderator.before_called = 1
+        moderator.after_called = 0
+        moderator.task_called = False
 
-        self.assertIsInstance(queue.current_advice, MyAdvice1)
+        self.assertIsInstance(moderator.current_advice, MyAdvice1)
 
-        queue.before_called = 2
-        self.assertIsInstance(queue.current_advice, MyAdvice2)
+        moderator.before_called = 2
+        self.assertIsInstance(moderator.current_advice, MyAdvice2)
 
     def test_current_advice_is_after(self):
-        queue = _Moderator([MyAdvice1(), MyAdvice2()])
-        queue.before_called = 2
-        queue.after_called = 1
-        queue.task_called = True
+        moderator = _Moderator([MyAdvice1(), MyAdvice2()])
+        moderator.before_called = 2
+        moderator.after_called = 1
+        moderator.task_called = True
 
-        self.assertIsInstance(queue.current_advice, MyAdvice2)
+        self.assertIsInstance(moderator.current_advice, MyAdvice2)
 
-        queue.after_called = 2
-        self.assertIsInstance(queue.current_advice, MyAdvice1)
+        moderator.after_called = 2
+        self.assertIsInstance(moderator.current_advice, MyAdvice1)
 
     def test_current_advice_is_None_without_advices(self):
-        queue = _Moderator()
-        self.assertIsNone(queue.current_advice)
+        moderator = _Moderator()
+        self.assertIsNone(moderator.current_advice)
 
     def test_current_advice_is_None_when_finished(self):
-        queue = _Moderator([MyAdvice1()])
-        queue.before_called = 1
-        queue.after_called = 1
-        queue.task_called = True
-        queue._is_finished = True
-        self.assertIsNone(queue.current_advice)
+        moderator = _Moderator([MyAdvice1()])
+        moderator.before_called = 1
+        moderator.after_called = 1
+        moderator.task_called = True
+        moderator._is_finished = True
+        self.assertIsNone(moderator.current_advice)
+
+    def test_pickling_keeps_all_state(self):
+        moderator = _Moderator([MyAdvice1()])
+        moderator.before_called = 1
+        moderator.after_called = 1
+        moderator.task_called = True
+        moderator._is_finished = True
+        pickled_moderator = pickle.dumps(moderator)
+        unpickled_moderator = pickle.loads(pickled_moderator)
+        self.assertEqual(unpickled_moderator.before_called, 1)
+        self.assertEqual(unpickled_moderator.after_called, 1)
+        self.assertTrue(unpickled_moderator.task_called)
+        self.assertTrue(unpickled_moderator._is_finished)
 
 
 if __name__ == '__main__':

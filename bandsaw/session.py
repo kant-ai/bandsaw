@@ -247,7 +247,7 @@ class _Moderator(SerializableValue):
             self.after_called += 1
             advice.after(session)
 
-        if self.after_called == len(self.advice_chain):
+        elif self.after_called == len(self.advice_chain):
             self._is_finished = True
 
     def skip(self, session):
@@ -303,7 +303,17 @@ class _Moderator(SerializableValue):
             'before_called': self.before_called,
             'after_called': self.after_called,
             'task_called': self.task_called,
+            'is_finished': self._is_finished,
         }
+
+    def __getstate__(self):
+        return self.serialized()
+
+    def __setstate__(self, values):
+        self.before_called = values['before_called']
+        self.after_called = values['after_called']
+        self.task_called = values['task_called']
+        self._is_finished = values['is_finished']
 
     @classmethod
     def deserialize(cls, values):
@@ -311,4 +321,5 @@ class _Moderator(SerializableValue):
         queue.before_called = values['before_called']
         queue.after_called = values['after_called']
         queue.task_called = values['task_called']
+        queue._is_finished = values['is_finished']
         return queue
