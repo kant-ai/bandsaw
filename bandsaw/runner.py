@@ -2,6 +2,7 @@
 import argparse
 import io
 import logging
+import os
 
 from .session import Session
 
@@ -20,7 +21,11 @@ def main(args):
     Args:
         args (tuple[str]): The arguments taken from the command line.
     """
-    log_format = "{asctime} {process: >5d} {thread: >5d} {name} {levelname}: {message}"
+    hostname = os.uname()[1]
+    log_format = (
+        f"{{asctime}} {hostname} {{process: >5d}} {{thread: >5d}} "
+        f"{{name}} {{levelname}}: {{message}}"
+    )
     logging.basicConfig(level=logging.INFO, format=log_format, style='{')
 
     parser = argparse.ArgumentParser()
