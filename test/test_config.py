@@ -31,6 +31,12 @@ class TestConfiguration(unittest.TestCase):
 
         self.assertNotEqual(config1, config2)
 
+    def test_configuration_with_different_type_are_not_equal(self):
+        config = Configuration()
+        config.module_name = 'my_config'
+
+        self.assertNotEqual(config, 'config')
+
     def test_configuration_with_same_name_have_same_hash(self):
         config1 = Configuration()
         config2 = Configuration()
