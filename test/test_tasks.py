@@ -35,6 +35,11 @@ class TestTask(unittest.TestCase):
         bytecode = task.bytecode
         self.assertEqual(bytecode, b'd\x01S\x00')
 
+    def test_create_task_sets_task_kwargs(self):
+        task = Task.create_task(free_function, {'my': 'kwargs'})
+
+        self.assertEqual(task.kwargs, {'my': 'kwargs'})
+
     def test_free_function_tasks_can_be_serialized(self):
         task = Task.create_task(free_function)
         serialized = task.serialized()
@@ -57,6 +62,15 @@ class TestTask(unittest.TestCase):
 
         result = task._execute([], {})
         self.assertEqual('local-function', result)
+
+        result = task.source
+        self.assertEqual(result, "        def local_function():\n            return 'local-function'\n")
+
+        with self.assertRaises(NotImplementedError):
+            task.serialized()
+
+        with self.assertRaises(NotImplementedError):
+            type(task).deserialize(None)
 
     def test_create_task_raises_for_unknown_task_type(self):
         class MyClass:

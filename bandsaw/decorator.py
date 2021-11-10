@@ -68,7 +68,7 @@ def task(*task_args, config=None, chain=None, **task_kwargs):
         logger.info("Decorate function '%s'", func)
 
         logger.info("Creating task for function '%s'", func)
-        the_task = Task.create_task(func)
+        the_task = Task.create_task(func, task_kwargs)
 
         def inner(*func_args, **func_kwargs):
 
