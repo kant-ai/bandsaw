@@ -8,7 +8,7 @@ from bandsaw.config import Configuration
 from bandsaw.serialization.json import JsonSerializer
 from bandsaw.session import Session
 from bandsaw.tasks import Task
-from bandsaw.run import Run
+from bandsaw.execution import Execution
 
 
 def task_function():
@@ -24,7 +24,7 @@ class TestCachingAdvice(unittest.TestCase):
         self.advice = CachingAdvice(self.cache_dir)
         task = Task.create_task(task_function)
         task.task_id = 't'
-        self.session = Session(task, Run('r'), configuration)
+        self.session = Session(task, Execution('r'), configuration)
         self.session.proceed = lambda: None
 
     def tearDown(self):
@@ -69,19 +69,19 @@ class TestCachingAdvice(unittest.TestCase):
         self.advice.after(self.session)
 
         cache_task_path = self.cache_dir / 't'
-        cache_run_path = cache_task_path / 's'
+        cache_execution_path = cache_task_path / 's'
         self.assertTrue(cache_task_path.exists())
         self.assertTrue(cache_task_path.is_dir())
-        self.assertFalse(cache_run_path.exists())
+        self.assertFalse(cache_execution_path.exists())
 
-        self.session.run = Run('s')
+        self.session.execution = Execution('s')
 
         self.advice.before(self.session)
         self.session.result = 'My other result'
         self.advice.after(self.session)
 
-        self.assertTrue(cache_run_path.exists())
-        self.assertTrue(cache_run_path.is_file())
+        self.assertTrue(cache_execution_path.exists())
+        self.assertTrue(cache_execution_path.is_file())
 
     def test_result_is_reused_from_existing_cache_item(self):
         concluded = False

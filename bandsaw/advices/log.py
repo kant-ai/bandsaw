@@ -14,7 +14,7 @@ class LoggingAdvice(Advice):
         logger.info(
             "BEFORE %s:%s with context %s",
             session.task.task_id,
-            session.run.run_id,
+            session.execution.execution_id,
             session.context,
         )
         session.proceed()
@@ -23,7 +23,7 @@ class LoggingAdvice(Advice):
         logger.info(
             "AFTER %s:%s with context %s",
             session.task.task_id,
-            session.run.run_id,
+            session.execution.execution_id,
             session.context,
         )
         session.proceed()

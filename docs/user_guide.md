@@ -51,13 +51,13 @@ def my_function(x):
     return x
 ```
 
-### Runs
+### Executions
 
 Tasks can take arbitrary arguments, which means we can have multiple executions of the
 same task, that differ in the given arguments. This is captured by a
-[`Run`](../api/#bandsaw.run.Run) object, which encapsulates the arguments for a specific
-task execution. Similar to the `task_id`, each run has a separate `run_id` that
-differentiates between different runs.
+[`Execution`](../api/#bandsaw.execution.Execution) object, which encapsulates the arguments for a specific
+task execution. Similar to the `task_id`, each execution has a separate `execution_id` that
+differentiates between different executions based on their arguments.
 
 ### Advice
 
@@ -81,13 +81,13 @@ current `session`, the sole argument both methods are taking.
 ### Session
 
 A [`Session`](../api/#bandsaw.session.Session) is the object, that manages the process
-of executing a task for a specific run. It defines the different actions that advices
+of executing a task for a specific execution. It defines the different actions that advices
 can take when their `before()` or `after()` methods are called.
 
 ![Diagram of an advised task](Session.svg)
 
 When a task is being called within a workflow, a new `Session` object is instantiated
-with the task, a run object containing the tasks arguments and a list of advices, called
+with the task, an execution object containing the tasks arguments and a list of advices, called
 the "advice chain", that should be used for advising the execution.
 
 #### before() executing a task.
@@ -140,7 +140,7 @@ at a later point in time or on a different platform.
 
 For this the session contains two methods, [`save(stream)`](../api/#bandsaw.session.Session.save)
 and [`restore(stream)`](../api/#bandsaw.session.Session.restore). Both methods will
-(de-)serialize the complete session including context, task, run and result. The only
+(de-)serialize the complete session including context, task, execution and result. The only
 thing missing here are the objects from the advice chain, since bandsaw can't enforce them
 to be serializable. This means, that the same advice chain with the same name must be
 available from the configuration at the time, the session is restored.
@@ -212,8 +212,8 @@ with pickle, support for pickle can easily be
 [added](https://docs.python.org/3/library/pickle.html#pickling-class-instances).
 One disadvantage of pickle is that sometimes the serialized representation of a value
 is not unique. Since bandsaw uses the serialized form of arguments to derive the
-`run_id` of a run, this can lead to inconsistencies, when the same arguments can lead
-to different run_ids.
+`execution_id` of a execution, this can lead to inconsistencies, when the same arguments can lead
+to different execution_ids.
 
 #### Json
 The [`JsonSerializer`](../api/#bandsaw.serialization.json.JsonSerializer) uses JSON as

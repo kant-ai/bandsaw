@@ -23,7 +23,7 @@ class CachingAdvice(Advice):
 
     def before(self, session):
         artifact_id = session.task.task_id
-        revision_id = session.run.run_id
+        revision_id = session.execution.execution_id
 
         cache_item_path = self.directory / artifact_id / revision_id
         session.context['cache-item-path'] = str(cache_item_path)

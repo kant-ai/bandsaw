@@ -4,7 +4,7 @@ import unittest
 
 from bandsaw.context import Context
 from bandsaw.result import Result
-from bandsaw.run import Run
+from bandsaw.execution import Execution
 from bandsaw.serialization import SerializableValue, JsonSerializer
 
 
@@ -154,15 +154,15 @@ class TestJsonSerializationProvider(unittest.TestCase):
         deserialized_context = self.serialization.deserialize(stream)
         self.assertEqual(deserialized_context.attributes, {'my-attribute': 1})
 
-    def test_serialize_run(self):
-        run = Run('my-id', [1, 2], {'kwarg': 1})
+    def test_serialize_execution(self):
+        execution = Execution('my-id', [1, 2], {'kwarg': 1})
         stream = io.BytesIO()
-        self.serialization.serialize(run, stream)
+        self.serialization.serialize(execution, stream)
         stream.seek(0)
-        deserialized_run = self.serialization.deserialize(stream)
-        self.assertEqual(deserialized_run.run_id, run.run_id)
-        self.assertEqual(deserialized_run.args, run.args)
-        self.assertEqual(deserialized_run.kwargs, run.kwargs)
+        deserialized = self.serialization.deserialize(stream)
+        self.assertEqual(deserialized.execution_id, execution.execution_id)
+        self.assertEqual(deserialized.args, execution.args)
+        self.assertEqual(deserialized.kwargs, execution.kwargs)
 
     def test_serialize_result_with_value(self):
         result = Result(value='My value')

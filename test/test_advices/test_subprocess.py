@@ -6,7 +6,7 @@ import unittest.mock
 from bandsaw.advices.subprocess import SubprocessAdvice
 from bandsaw.config import Configuration
 from bandsaw.interpreter import Interpreter
-from bandsaw.run import Run
+from bandsaw.execution import Execution
 from bandsaw.serialization.json import JsonSerializer
 from bandsaw.session import Session
 from bandsaw.tasks import Task
@@ -45,7 +45,7 @@ class TestSubprocessAdvice(unittest.TestCase):
         shutil.rmtree(advice.directory)
 
     def test_task_is_run_in_different_process(self):
-        session = Session(Task.create_task(_get_pid), Run('r'), configuration)
+        session = Session(Task.create_task(_get_pid), Execution('r'), configuration)
         session.initiate()
         subprocess_pid = session.result.value
 

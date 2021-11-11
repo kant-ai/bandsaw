@@ -3,7 +3,7 @@ import unittest
 from bandsaw.advice import Advice, advise_task_with_chain
 from bandsaw.config import Configuration
 from bandsaw.result import Result
-from bandsaw.run import Run
+from bandsaw.execution import Execution
 
 
 class TestAdviseFunctionWithChain(unittest.TestCase):
@@ -17,11 +17,11 @@ class TestAdviseFunctionWithChain(unittest.TestCase):
         class MyTask:
 
             @staticmethod
-            def execute_run(_):
+            def execute(_):
                 nonlocal called
                 called = True
 
-        advise_task_with_chain(MyTask(), Run('1'), self.config)
+        advise_task_with_chain(MyTask(), Execution('1'), self.config)
         self.assertTrue(called)
 
     def test_return_value_is_Result(self):
@@ -29,10 +29,10 @@ class TestAdviseFunctionWithChain(unittest.TestCase):
         class MyTask:
 
             @staticmethod
-            def execute_run(_):
+            def execute(_):
                 return Result(value=True)
 
-        result = advise_task_with_chain(MyTask(), Run('1'), self.config)
+        result = advise_task_with_chain(MyTask(), Execution('1'), self.config)
         self.assertIsInstance(result, Result)
         self.assertEqual(Result(value=True), result)
 
@@ -45,12 +45,12 @@ class TestAdviseFunctionWithChain(unittest.TestCase):
         class MyTask:
 
             @staticmethod
-            def execute_run(_):
+            def execute(_):
                 nonlocal called
                 called = True
 
         self.config.add_advice_chain(EmptyAdvice())
-        advise_task_with_chain(MyTask(), Run('1'), self.config)
+        advise_task_with_chain(MyTask(), Execution('1'), self.config)
         self.assertTrue(called)
 
     def test_single_advice_before_after_are_called(self):
@@ -77,14 +77,14 @@ class TestAdviseFunctionWithChain(unittest.TestCase):
         class MyTask:
 
             @staticmethod
-            def execute_run(_):
+            def execute(_):
                 nonlocal execution_called
                 self.assertTrue(before_called, "Before not called")
                 self.assertFalse(after_called, "After already called")
                 execution_called = True
 
         self.config.add_advice_chain(Advice1())
-        advise_task_with_chain(MyTask(), Run('1'), self.config)
+        advise_task_with_chain(MyTask(), Execution('1'), self.config)
         self.assertTrue(before_called)
         self.assertTrue(execution_called)
         self.assertTrue(after_called)
@@ -96,22 +96,22 @@ class TestAdviseFunctionWithChain(unittest.TestCase):
                 self.value = value
 
             def before(self, session):
-                session.run.args[0].append(f'before {self.value}')
+                session.execution.args[0].append(f'before {self.value}')
                 session.proceed()
 
             def after(self, session):
-                session.run.args[0].append(f'after {self.value}')
+                session.execution.args[0].append(f'after {self.value}')
                 session.proceed()
 
         class MyTask:
 
             @staticmethod
-            def execute_run(run):
-                run.args[0].append('result')
-                return Result(value=run.args[0])
+            def execute(execution):
+                execution.args[0].append('result')
+                return Result(value=execution.args[0])
 
         self.config.add_advice_chain(MyAdvice(1), MyAdvice(2))
-        result = advise_task_with_chain(MyTask(), Run('1', [[]]), self.config)
+        result = advise_task_with_chain(MyTask(), Execution('1', [[]]), self.config)
         self.assertEqual(['before 1', 'before 2', 'result', 'after 2', 'after 1'], result.value)
 
     def test_first_advice_skips_all(self):
@@ -122,26 +122,26 @@ class TestAdviseFunctionWithChain(unittest.TestCase):
                 self.value = value
 
             def before(self, session):
-                session.run.args[0].append(f'before {self.value}')
+                session.execution.args[0].append(f'before {self.value}')
                 if self.value == 1:
-                    session.conclude(Result(session.run.args[0]))
+                    session.conclude(Result(session.execution.args[0]))
                 else:
                     session.proceed()
 
             def after(self, session):
-                session.run.args[0].append(f'after {self.value}')
+                session.execution.args[0].append(f'after {self.value}')
                 session.proceed()
 
         class MyTask:
 
             @staticmethod
-            def execute_run(run):
-                run.args[0].append('result')
-                return run.args[0]
+            def execute(execution):
+                execution.args[0].append('result')
+                return execution.args[0]
 
         self.config.add_advice_chain(MyAdvice(1), MyAdvice(2), MyAdvice(3))
         result = advise_task_with_chain(
-            MyTask(), Run('1', [[]]), self.config,
+            MyTask(), Execution('1', [[]]), self.config,
         )
         self.assertEqual(['before 1'], result.value)
 
@@ -153,26 +153,26 @@ class TestAdviseFunctionWithChain(unittest.TestCase):
                 self.value = value
 
             def before(self, session):
-                session.run.args[0].append(f'before {self.value}')
+                session.execution.args[0].append(f'before {self.value}')
                 if self.value == 2:
-                    session.conclude(Result(session.run.args[0]))
+                    session.conclude(Result(session.execution.args[0]))
                 else:
                     session.proceed()
 
             def after(self, session):
-                session.run.args[0].append(f'after {self.value}')
+                session.execution.args[0].append(f'after {self.value}')
                 session.proceed()
 
         class MyTask:
 
             @staticmethod
-            def execute_run(run):
-                run.args[0].append('result')
-                return run.args[0]
+            def execute(execution):
+                execution.args[0].append('result')
+                return execution.args[0]
 
         self.config.add_advice_chain(MyAdvice(1), MyAdvice(2), MyAdvice(3))
         result = advise_task_with_chain(
-            MyTask(), Run('1', [[]]), self.config,
+            MyTask(), Execution('1', [[]]), self.config,
         )
         self.assertEqual(['before 1', 'before 2', 'after 1'], result.value)
 
@@ -184,26 +184,26 @@ class TestAdviseFunctionWithChain(unittest.TestCase):
                 self.value = value
 
             def before(self, session):
-                session.run.args[0].append(f'before {self.value}')
+                session.execution.args[0].append(f'before {self.value}')
                 if self.value == 3:
-                    session.conclude(Result(session.run.args[0]))
+                    session.conclude(Result(session.execution.args[0]))
                 else:
                     session.proceed()
 
             def after(self, session):
-                session.run.args[0].append(f'after {self.value}')
+                session.execution.args[0].append(f'after {self.value}')
                 session.proceed()
 
         class MyTask:
 
             @staticmethod
-            def execute_run(run):
-                run.args[0].append('result')
-                return run.args[0]
+            def execute(execution):
+                execution.args[0].append('result')
+                return execution.args[0]
 
         self.config.add_advice_chain(MyAdvice(1), MyAdvice(2), MyAdvice(3))
         result = advise_task_with_chain(
-            MyTask(), Run('1', [[]]), self.config,
+            MyTask(), Execution('1', [[]]), self.config,
         )
         self.assertEqual(['before 1', 'before 2', 'before 3', 'after 2', 'after 1'], result.value)
 

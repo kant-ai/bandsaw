@@ -177,7 +177,7 @@ class SshAdvice(Advice):
 
     def before(self, session):
 
-        session_id = session.run.run_id
+        session_id = session.execution.execution_id
 
         session_in_path = pathlib.Path(
             tempfile.mktemp('.zip', 'in-' + session_id + '-', self.directory)

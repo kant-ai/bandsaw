@@ -4,7 +4,7 @@ import logging
 
 from .advice import advise_task_with_chain
 from .config import get_configuration
-from .run import Run
+from .execution import Execution
 from .identifier import identifier_from_bytes
 from .tasks import Task
 
@@ -72,16 +72,16 @@ def task(*task_args, config=None, chain=None, **task_kwargs):
 
         def inner(*func_args, **func_kwargs):
 
-            run_id = _calculate_run_id(
+            execution_id = _calculate_execution_id(
                 func_args,
                 func_kwargs,
                 configuration.serializer,
             )
-            run = Run(run_id, func_args, func_kwargs)
+            execution = Execution(execution_id, func_args, func_kwargs)
 
             result = advise_task_with_chain(
                 the_task,
-                run,
+                execution,
                 configuration,
                 chain_name,
             )
@@ -102,8 +102,8 @@ def task(*task_args, config=None, chain=None, **task_kwargs):
     raise RuntimeError("Invalid 'task' decorator.")
 
 
-def _calculate_run_id(args, kwargs, serializer):
-    """The unique id of a run, derived from its arguments."""
+def _calculate_execution_id(args, kwargs, serializer):
+    """The unique id of an execution, derived from its arguments."""
     stream = io.BytesIO()
     value = (args, kwargs)
     serializer.serialize(value, stream)

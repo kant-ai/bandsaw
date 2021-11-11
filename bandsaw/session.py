@@ -26,7 +26,7 @@ class Session:
 
     Attributes:
         task (bandsaw.tasks.Task): The task that is executed.
-        run (bandsaw.run.Run): The run definition for the task.
+        execution (bandsaw.execution.Execution): The execution arguments for the task.
         context (bandsaw.context.Context): The context that can be used for advices
             to store state.
         result (bandsaw.result.Result): Result of the task if already computed.
@@ -38,7 +38,7 @@ class Session:
     def __init__(
         self,
         task=None,
-        run=None,
+        execution=None,
         configuration=None,
         advice_chain='default',
     ):
@@ -48,7 +48,7 @@ class Session:
 
         """
         self.task = task
-        self.run = run
+        self.execution = execution
         self.context = {}
         self.result = None
         self._configuration = configuration
@@ -70,7 +70,7 @@ class Session:
 
         logger.debug("running extensions before advice")
         for extension in self._configuration.extensions:
-            extension.on_before_advice(self.task, self.run, self.context)
+            extension.on_before_advice(self.task, self.execution, self.context)
 
         self.proceed()
 
@@ -82,7 +82,9 @@ class Session:
 
         logger.debug("running extensions after advice")
         for extension in self._configuration.extensions:
-            extension.on_after_advice(self.task, self.run, self.context, self.result)
+            extension.on_after_advice(
+                self.task, self.execution, self.context, self.result
+            )
         return self.result
 
     @property
@@ -148,8 +150,8 @@ class Session:
             stream = io.BytesIO(archive.read('task.dat'))
             self.task = serializer.deserialize(stream)
 
-            stream = io.BytesIO(archive.read('run.dat'))
-            self.run = serializer.deserialize(stream)
+            stream = io.BytesIO(archive.read('execution.dat'))
+            self.execution = serializer.deserialize(stream)
 
             stream = io.BytesIO(archive.read('context.dat'))
             self.context = serializer.deserialize(stream)
@@ -181,8 +183,8 @@ class Session:
             archive.writestr('task.dat', stream.getvalue())
 
             stream = io.BytesIO()
-            serializer.serialize(self.run, stream)
-            archive.writestr('run.dat', stream.getvalue())
+            serializer.serialize(self.execution, stream)
+            archive.writestr('execution.dat', stream.getvalue())
 
             stream = io.BytesIO()
             serializer.serialize(self.context, stream)
@@ -237,7 +239,7 @@ class _Moderator(SerializableValue):
             advice.before(session)
 
         elif not self.task_called:
-            result = session.task.execute_run(session.run)
+            result = session.task.execute(session.execution)
             self.task_called = True
             session.conclude(result)
 

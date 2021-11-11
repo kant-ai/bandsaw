@@ -39,7 +39,7 @@ class SubprocessAdvice(Advice):
     def before(self, session):
         logger.info("before called in process %d", os.getpid())
 
-        session_id = session.run.run_id
+        session_id = session.execution.execution_id
 
         session_in_file, session_in_path = tempfile.mkstemp(
             '.zip', 'in-' + session_id + '-', self.directory

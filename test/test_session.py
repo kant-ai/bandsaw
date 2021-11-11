@@ -7,14 +7,14 @@ import unittest.mock
 from bandsaw.advice import Advice
 from bandsaw.config import Configuration
 from bandsaw.extensions import Extension
-from bandsaw.run import Run
+from bandsaw.execution import Execution
 from bandsaw.session import Session, _Moderator
 
 
 class MyTask:
 
     @staticmethod
-    def execute_run(_):
+    def execute(_):
         return True
 
 
@@ -72,7 +72,7 @@ class MyConcurrentAdvice(Advice):
 class MyConcurrentTask:
 
     @staticmethod
-    def execute_run(_):
+    def execute(_):
         return threading.current_thread().ident
 
 
@@ -83,7 +83,7 @@ class TestSession(unittest.TestCase):
         self.config.add_advice_chain(MySavingAdvice(), name='save')
 
     def test_empty_advice_returns_execution_result(self):
-        session = Session(MyTask(), Run('1'), self.config)
+        session = Session(MyTask(), Execution('1'), self.config)
         result = session.initiate()
         self.assertTrue(result)
 
@@ -97,15 +97,15 @@ class TestSession(unittest.TestCase):
             def on_init(self, configuration):
                 self.init_called = True
 
-            def on_before_advice(self, task, run, context):
+            def on_before_advice(self, task, execution, context):
                 self.before_called = True
 
-            def on_after_advice(self, task, run, context, result):
+            def on_after_advice(self, task, execution, context, result):
                 self.after_called = True
 
         extension = MyExtension()
         self.config.add_extension(extension)
-        session = Session(MyTask(), Run('1'), self.config)
+        session = Session(MyTask(), Execution('1'), self.config)
         session.initiate()
         self.assertTrue(extension.before_called)
         self.assertTrue(extension.after_called)
@@ -119,7 +119,7 @@ class TestSession(unittest.TestCase):
         self.config.add_advice_chain(NoProceedingAdvice(), name='no-proceeding')
 
         with self.assertRaisesRegex(RuntimeError, 'Not all advice.*NoProceedingAdvice'):
-            session = Session(MyTask(), Run('1'), self.config, 'no-proceeding')
+            session = Session(MyTask(), Execution('1'), self.config, 'no-proceeding')
             session.initiate()
 
     def test_double_proceeding_advice_raises_an_error(self):
@@ -132,18 +132,18 @@ class TestSession(unittest.TestCase):
         self.config.add_advice_chain(DoubleProceedingAdvice(), name='double-proceeding')
 
         with self.assertRaisesRegex(RuntimeError, 'Session already finished'):
-            session = Session(MyTask(), Run('1'), self.config, 'double-proceeding')
+            session = Session(MyTask(), Execution('1'), self.config, 'double-proceeding')
             session.initiate()
 
     def test_advice_can_save_and_resume_session(self):
         with unittest.mock.patch("bandsaw.session.get_configuration", return_value=self.config):
-            session = Session(MyTask(), Run('1'), self.config, 'save')
+            session = Session(MyTask(), Execution('1'), self.config, 'save')
             result = session.initiate()
             self.assertTrue(result)
 
     def test_session_restore_updates_configuration(self):
         with unittest.mock.patch("bandsaw.session.get_configuration", return_value=self.config):
-            session = Session(MyTask(), Run('1'), self.config)
+            session = Session(MyTask(), Execution('1'), self.config)
 
             stream = io.BytesIO()
             session.save(stream)
@@ -158,17 +158,17 @@ class TestSession(unittest.TestCase):
             self.assertEqual(session._advice_chain, restored_session._advice_chain)
             self.assertEqual(session.context, restored_session.context)
 
-    def test_session_run_parts_in_new_thread(self):
+    def test_session_runs_parts_in_new_thread(self):
         self.config.add_advice_chain(MyConcurrentAdvice(), name='concurrent')
 
         with unittest.mock.patch("bandsaw.session.get_configuration", return_value=self.config):
-            session = Session(MyConcurrentTask(), Run('1'), self.config, 'concurrent')
+            session = Session(MyConcurrentTask(), Execution('1'), self.config, 'concurrent')
 
             result = session.initiate()
             self.assertNotEqual(threading.current_thread().ident, result)
 
     def test_session_uses_serializer_from_configuration(self):
-        session = Session(MyTask(), Run('1'), self.config)
+        session = Session(MyTask(), Execution('1'), self.config)
 
         serializer = session.serializer
         self.assertIs(serializer, self.config.serializer)

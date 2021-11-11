@@ -7,7 +7,7 @@ import unittest.mock
 from bandsaw.advices.ssh import SshAdvice, Remote, SshBackend, SshCommandLineBackend
 from bandsaw.config import Configuration
 from bandsaw.interpreter import Interpreter
-from bandsaw.run import Run
+from bandsaw.execution import Execution
 from bandsaw.session import Session
 from bandsaw.tasks import Task
 
@@ -100,7 +100,7 @@ class TestSshAdvice(unittest.TestCase):
 
     def test_task_is_run_in_different_process(self):
         config = Configuration()
-        session = Session(Task.create_task(_get_pid), Run('r'), config)
+        session = Session(Task.create_task(_get_pid), Execution('r'), config)
         dummy_backend = DummyBackend(session)
         backend_spy = unittest.mock.Mock(wraps=dummy_backend)
         advice = SshAdvice(

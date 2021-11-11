@@ -2,13 +2,13 @@
 from .session import Session
 
 
-def advise_task_with_chain(task, run, configuration, advice_chain='default'):
+def advise_task_with_chain(task, execution, configuration, advice_chain='default'):
     """
     Executes an `Task` with additional advices.
 
     Args:
         task (bandsaw.tasks.Task): The task to be executed.
-        run (bandsaw.run.Run): The run definition for the task.
+        execution (bandsaw.execution.Execution): The execution definition for the task.
         configuration (bandsaw.config.Configuration): The configuration which should
             be used during advising.
         advice_chain (str): The name of the advice chain which contains the additional
@@ -18,7 +18,7 @@ def advise_task_with_chain(task, run, configuration, advice_chain='default'):
         bandsaw.result.Result: The result of the task execution.
 
     """
-    session = Session(task, run, configuration, advice_chain)
+    session = Session(task, execution, configuration, advice_chain)
     return session.initiate()
 
 

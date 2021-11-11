@@ -58,20 +58,20 @@ class Task(SerializableValue, abc.ABC):
             Any: During the execution the task can raise arbitrary exceptions.
         """
 
-    def execute_run(self, run):
+    def execute(self, execution):
         """
-        Execute the task with the arguments specified by the run.
+        Execute the task with the arguments specified by the execution.
 
         Args:
-            run (bandsaw.run.Run): The run definition which contains how the task
-                should be run.
+            execution (bandsaw.execution.Execution): The definition which contains how
+                the task should be executed.
 
         Returns:
             bandsaw.result.Result: A `Result` object with either the returned value
                 from the task or an exception that was raised by the task.
         """
         try:
-            result_value = self._execute(run.args, run.kwargs)
+            result_value = self._execute(execution.args, execution.kwargs)
             result = Result(value=result_value)
         except Exception as error:  # pylint: disable=W0703 # too general exception
             result = Result(exception=error)
