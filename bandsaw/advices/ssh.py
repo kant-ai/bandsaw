@@ -72,6 +72,11 @@ class SshCommandLineBackend(SshBackend):
         self._run(
             [
                 'scp',
+                '-P',
+                str(remote.port),
+            ]
+            + self._key_file_option(remote)
+            + [
                 str(local_path),
                 copy_destination,
             ],
@@ -82,6 +87,11 @@ class SshCommandLineBackend(SshBackend):
         self._run(
             [
                 'scp',
+                '-P',
+                str(remote.port),
+            ]
+            + self._key_file_option(remote)
+            + [
                 copy_source,
                 str(local_path),
             ],
@@ -91,6 +101,11 @@ class SshCommandLineBackend(SshBackend):
         return self._run(
             [
                 'ssh',
+                '-p',
+                str(remote.port),
+            ]
+            + self._key_file_option(remote)
+            + [
                 self.login(remote),
                 str(executable),
             ]
@@ -111,6 +126,15 @@ class SshCommandLineBackend(SshBackend):
         """Returns the remote path in form of <user>@<host>:<path>"""
         return f"{self.login(remote)}:{path.absolute()}"
 
+    @staticmethod
+    def _key_file_option(remote):
+        if remote.key_file is not None:
+            return [
+                '-i',
+                remote.key_file,
+            ]
+        return []
+
 
 class Remote:  # pylint: disable=too-few-public-methods
     """
@@ -120,19 +144,31 @@ class Remote:  # pylint: disable=too-few-public-methods
 
     Attributes:
         host (str): The hostname of the machine, where this interpreter is run.
+        port (int): The port where ssh is listening for connections. Defaults to 22.
         user (str): The name of the user, under which the interpreter will run.
             Defaults to the name of the local user.
+        key_file (str): Path to a file containing the key to use for authentication.
         interpreter (bandsaw.interpreter.Interpreter): The interpreter which should be
             used, including its executable and python path.
         directory (str): Remote directory where temporary files are stored. If `None`,
             defaults to '/tmp'.
     """
 
-    def __init__(self, host=None, user=None, interpreter=None, directory=None):
+    def __init__(
+        self,
+        host=None,
+        port=None,
+        user=None,
+        key_file=None,
+        interpreter=None,
+        directory=None,
+    ):  # pylint: disable=too-many-arguments
         if host is None:
             raise ValueError("Remote needs a host, `None` given.")
         self.host = host
+        self.port = port or 22
         self.user = user or get_current_username()
+        self.key_file = key_file
         if interpreter is None:
             raise ValueError("Remote needs an interpreter, `None` given.")
         self.interpreter = interpreter

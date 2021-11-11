@@ -29,6 +29,16 @@ class TestSshCommandLineBackend(unittest.TestCase):
             ),
             directory='/remote/dir',
         )
+        self.remote_with_key = Remote(
+            host='test.host',
+            user='my_user',
+            key_file='/my/key',
+            interpreter=Interpreter(
+                path=[],
+                executable='/usr/bin/python3',
+            ),
+            directory='/remote/dir',
+        )
         self.check_call_patcher = unittest.mock.patch(
             'bandsaw.advices.ssh.subprocess.check_call'
         )
@@ -44,7 +54,7 @@ class TestSshCommandLineBackend(unittest.TestCase):
             pathlib.Path('/my/remote/path'),
         )
         self.check_call_mock.assert_called_with(
-            ['scp', '/my/local/path', 'my_user@test.host:/my/remote/path'],
+            ['scp', '-P', '22', '/my/local/path', 'my_user@test.host:/my/remote/path'],
         )
 
     def test_copy_file_from_remote(self):
@@ -54,7 +64,7 @@ class TestSshCommandLineBackend(unittest.TestCase):
             pathlib.Path('/my/local/path'),
         )
         self.check_call_mock.assert_called_with(
-            ['scp', 'my_user@test.host:/my/remote/path', '/my/local/path'],
+            ['scp', '-P', '22', 'my_user@test.host:/my/remote/path', '/my/local/path'],
         )
 
     def test_execute_remote(self):
@@ -64,7 +74,37 @@ class TestSshCommandLineBackend(unittest.TestCase):
             'argument',
         )
         self.check_call_mock.assert_called_with(
-            ['ssh', 'my_user@test.host', '/my/executable', 'argument'],
+            ['ssh', '-p', '22', 'my_user@test.host', '/my/executable', 'argument'],
+        )
+
+    def test_copy_file_to_remote_with_key_file(self):
+        self.backend.copy_file_to_remote(
+            self.remote_with_key,
+            pathlib.Path('/my/local/path'),
+            pathlib.Path('/my/remote/path'),
+        )
+        self.check_call_mock.assert_called_with(
+            ['scp', '-P', '22', '-i', '/my/key', '/my/local/path', 'my_user@test.host:/my/remote/path'],
+        )
+
+    def test_copy_file_from_remote_with_key_file(self):
+        self.backend.copy_file_from_remote(
+            self.remote_with_key,
+            pathlib.Path('/my/remote/path'),
+            pathlib.Path('/my/local/path'),
+        )
+        self.check_call_mock.assert_called_with(
+            ['scp', '-P', '22', '-i', '/my/key', 'my_user@test.host:/my/remote/path', '/my/local/path'],
+        )
+
+    def test_execute_remote_with_key_file(self):
+        self.backend.execute_remote(
+            self.remote_with_key,
+            pathlib.Path('/my/executable'),
+            'argument',
+        )
+        self.check_call_mock.assert_called_with(
+            ['ssh', '-p', '22', '-i', '/my/key', 'my_user@test.host', '/my/executable', 'argument'],
         )
 
 
