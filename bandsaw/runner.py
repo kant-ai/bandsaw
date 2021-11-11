@@ -4,6 +4,7 @@ import io
 import logging
 import os
 
+from .run import set_run_id
 from .session import Session
 
 
@@ -41,7 +42,15 @@ def main(args):
         help="The session after continuation ended",
         required=True,
     )
+    parser.add_argument(
+        '--run-id',
+        dest='run_id',
+        help="The run id of the workflow",
+        required=True,
+    )
     args = parser.parse_args(args=args)
+
+    set_run_id(args.run_id)
 
     logger.info("Creating new session")
     session = Session()

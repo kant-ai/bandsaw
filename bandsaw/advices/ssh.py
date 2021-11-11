@@ -225,6 +225,8 @@ class SshAdvice(Advice):
             str(remote_session_in_path),
             '--output',
             str(remote_session_out_path),
+            '--run-id',
+            session.run_id,
         )
         # environment = self.interpreter.environment
         # environment['PYTHONPATH'] = ':'.join(self.interpreter.path)

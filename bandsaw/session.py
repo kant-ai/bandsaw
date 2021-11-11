@@ -6,6 +6,7 @@ import zipfile
 
 from .config import get_configuration
 from .distribution import get_distribution_archive
+from .run import get_run_id
 from .serialization import SerializableValue
 
 
@@ -96,6 +97,11 @@ class Session:
     def distribution_archive(self):
         """The DistributionArchive which can be used when transferring the session."""
         return get_distribution_archive(self._configuration)
+
+    @property
+    def run_id(self):
+        """The run id of the workflow."""
+        return get_run_id()
 
     def proceed(self):
         """

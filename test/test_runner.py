@@ -15,14 +15,18 @@ class TestMain(unittest.TestCase):
         self.input.unlink()
         self.output.unlink()
 
+    @unittest.mock.patch('bandsaw.runner.set_run_id')
     @unittest.mock.patch('bandsaw.runner.Session')
-    def test_main(self, session_mock):
-        main(args=[
+    def test_main(self, session_mock, set_run_id_mock):
+        main(args=(
             '--input',
             str(self.input),
             '--output',
             str(self.output),
-        ])
+            '--run-id',
+            'my-run-id',
+        ))
+        set_run_id_mock.assert_called_with('my-run-id')
 
 
 if __name__ == '__main__':

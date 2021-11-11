@@ -173,6 +173,12 @@ class TestSession(unittest.TestCase):
         serializer = session.serializer
         self.assertIs(serializer, self.config.serializer)
 
+    def test_run_id_is_taken_from_get_run_id(self):
+        with unittest.mock.patch("bandsaw.session.get_run_id", return_value='run-id'):
+            session = Session(MyTask(), Execution('1'), self.config)
+            run_id = session.run_id
+            self.assertEqual(run_id, 'run-id')
+
 
 class MyAdvice1(Advice):
     pass

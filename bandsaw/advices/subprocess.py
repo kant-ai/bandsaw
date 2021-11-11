@@ -69,6 +69,8 @@ class SubprocessAdvice(Advice):
                 session_in_path,
                 '--output',
                 session_out_path,
+                '--run-id',
+                session.run_id,
             ],
             env=environment,
         )

@@ -23,6 +23,8 @@ The individual steps can have dependencies on external inputs and on results of 
 steps, so that they form a directed acyclic graph. Those steps are referred to as
 `Tasks` within bandsaw.
 
+Every single run of a workflow is assigned a unique identifier, called a "run id".
+
 ### Tasks
 
 Tasks are pieces of code, that are used to process data. Task instances can be created
