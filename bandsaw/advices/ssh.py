@@ -226,7 +226,7 @@ class SshAdvice(Advice):
         with io.FileIO(str(session_in_path), mode='w') as stream:
             session.save(stream)
 
-        remote_name = 'default'
+        remote_name = session.task.kwargs.get('ssh', {}).get('remote', 'default')
         remote = self.remotes[remote_name]
 
         logger.info("Copying over distribution archive to host %s", remote.host)
