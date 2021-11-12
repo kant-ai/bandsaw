@@ -24,7 +24,7 @@ class TestTask(unittest.TestCase):
 
     def test_create_task_handles_free_function(self):
         task = Task.create_task(free_function)
-        self.assertEqual('8cecc949e9edc5293ffccf67c76921b689679f55c69ddc0ec57a0df52503d171', task.task_id)
+        self.assertEqual('8cecc949e9edc5293ffc', task.task_id)
 
         result = task._execute([], {})
         self.assertEqual('free-function', result)
@@ -58,7 +58,7 @@ class TestTask(unittest.TestCase):
             return 'local-function'
 
         task = Task.create_task(local_function)
-        self.assertEqual('71b50995b93786bb8d5707e291dcab630780e80c38502ddef4d5894d738fda59', task.task_id)
+        self.assertEqual('71b50995b93786bb8d57', task.task_id)
 
         result = task._execute([], {})
         self.assertEqual('local-function', result)

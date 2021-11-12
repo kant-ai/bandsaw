@@ -1,5 +1,9 @@
 """Functions for generating identifier for arbitrary python objects."""
 import hashlib
+import os
+
+
+_ID_LENGTH = int(os.getenv('BANDSAW_ID_LENGTH', '16'))
 
 
 def identifier_from_bytes(buffer):
@@ -13,7 +17,7 @@ def identifier_from_bytes(buffer):
     Returns:
         str: The identifier in form of a string of a hexadecimal number.
     """
-    identifier = hashlib.sha256(buffer).hexdigest()
+    identifier = hashlib.sha256(buffer).hexdigest()[:_ID_LENGTH]
     return identifier
 
 
