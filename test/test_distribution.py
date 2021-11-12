@@ -24,6 +24,12 @@ class TestGetDistributionArchive(unittest.TestCase):
         archive = get_distribution_archive(self.config)
         self.assertTrue('argparse' in archive.modules)
 
+    def test_archives_are_cached(self):
+        self.config.add_modules_for_distribution('argparse')
+        archive1 = get_distribution_archive(self.config)
+        archive2 = get_distribution_archive(self.config)
+        self.assertIs(archive1, archive2)
+
 
 class TestDistributionArchive(unittest.TestCase):
 

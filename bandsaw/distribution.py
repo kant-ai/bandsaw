@@ -77,6 +77,44 @@ def _create_distribution_archive(path, modules=None):
         _add_main_module(archive)
 
 
+class _DistributionArchiveCache:
+    """
+    Internal cache that caches DistributionArchives within process
+    """
+
+    def __init__(self):
+        self._cache = {}
+
+    def get_archive(self, configuration):
+        """
+        Returns a distribution archive for a configuration, if in cache.
+
+        Args:
+            configuration (bandsaw.config.Configuration): Configuration for which the
+                distribution archive is requested.
+
+        Returns:
+            bandsaw.distribution.DistributionArchive: The distribution archive for the
+                given configuration if in the cache, otherwise `None`.
+        """
+        return self._cache.get(configuration)
+
+    def put_archive(self, configuration, archive):
+        """
+        Puts a distribution archive to the cache.
+
+        Args:
+            configuration (bandsaw.config.Configuration): Configuration for which the
+                distribution archive is added.
+            archive (bandsaw.distribution.DistributionArchive): The distribution
+                archive for the given configuration.
+        """
+        self._cache[configuration] = archive
+
+
+_CACHE = _DistributionArchiveCache()
+
+
 def get_distribution_archive(configuration):
     """
     Returns a distribution archive for a given configuration.
@@ -88,15 +126,20 @@ def get_distribution_archive(configuration):
     Returns:
         bandsaw.distribution.DistributionArchive: The archive for the configuration.
     """
-
-    archive_path = pathlib.Path(tempfile.mktemp(suffix='.pyz', prefix='distribution-'))
-    modules = [
-        '__main__',
-        'bandsaw',
-        configuration.module_name,
-        *configuration.distribution_modules,
-    ]
-    return DistributionArchive(archive_path, *modules)
+    archive = _CACHE.get_archive(configuration)
+    if archive is None:
+        archive_path = pathlib.Path(
+            tempfile.mktemp(suffix='.pyz', prefix='distribution-')
+        )
+        modules = [
+            '__main__',
+            'bandsaw',
+            configuration.module_name,
+            *configuration.distribution_modules,
+        ]
+        archive = DistributionArchive(archive_path, *modules)
+        _CACHE.put_archive(configuration, archive)
+    return archive
 
 
 class DistributionArchive:
