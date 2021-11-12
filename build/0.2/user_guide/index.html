@@ -1,0 +1,1374 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.kant.ai/bandsaw/0.2/user_guide/">
+      
+      <link rel="icon" href="../favicon.svg">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6">
+    
+    
+      
+        <title>User guide - Bandsaw documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.a57b2b03.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    
+      
+
+  
+
+
+    <script defer data-domain="docs.kant.ai" src="https://plausible.io/js/plausible.js"></script>
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="kantai" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#user-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://docs.kant.ai" title="Bandsaw documentation" class="md-header__button md-logo" aria-label="Bandsaw documentation" data-md-component="logo">
+      
+  <img src="../icon_white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Bandsaw documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              User guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://gitlab.com/kantai/bandsaw/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M105.2 24.9c-3.1-8.9-15.7-8.9-18.9 0L29.8 199.7h132c-.1 0-56.6-174.8-56.6-174.8zM.9 287.7c-2.6 8 .3 16.9 7.1 22l247.9 184-226.2-294zm160.8-88 94.3 294 94.3-294zm349.4 88-28.8-88-226.3 294 247.9-184c6.9-5.1 9.7-14 7.2-22zM425.7 24.9c-3.1-8.9-15.7-8.9-18.9 0l-56.6 174.8h132z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitLab
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://docs.kant.ai" title="Bandsaw documentation" class="md-nav__button md-logo" aria-label="Bandsaw documentation" data-md-component="logo">
+      
+  <img src="../icon_white.svg" alt="logo">
+
+    </a>
+    Bandsaw documentation
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://gitlab.com/kantai/bandsaw/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M105.2 24.9c-3.1-8.9-15.7-8.9-18.9 0L29.8 199.7h132c-.1 0-56.6-174.8-56.6-174.8zM.9 287.7c-2.6 8 .3 16.9 7.1 22l247.9 184-226.2-294zm160.8-88 94.3 294 94.3-294zm349.4 88-28.8-88-226.3 294 247.9-184c6.9-5.1 9.7-14 7.2-22zM425.7 24.9c-3.1-8.9-15.7-8.9-18.9 0l-56.6 174.8h132z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitLab
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        Getting started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          User guide
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        User guide
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#concepts" class="md-nav__link">
+    Concepts
+  </a>
+  
+    <nav class="md-nav" aria-label="Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    Workflow
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    Tasks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executions" class="md-nav__link">
+    Executions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advice" class="md-nav__link">
+    Advice
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session" class="md-nav__link">
+    Session
+  </a>
+  
+    <nav class="md-nav" aria-label="Session">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#before-executing-a-task" class="md-nav__link">
+    before() executing a task.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executing-the-task" class="md-nav__link">
+    Executing the task
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-executing-a-task" class="md-nav__link">
+    after() executing a task
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializing-the-session" class="md-nav__link">
+    Serializing the session
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advice-chains" class="md-nav__link">
+    Advice chains
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer" class="md-nav__link">
+    Serializer
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pickle" class="md-nav__link">
+    Pickle
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json" class="md-nav__link">
+    Json
+  </a>
+  
+    <nav class="md-nav" aria-label="Json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implement-serializablevalue" class="md-nav__link">
+    Implement SerializableValue
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-valueserializer" class="md-nav__link">
+    Create a ValueSerializer
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-bandsaw" class="md-nav__link">
+    How to use bandsaw
+  </a>
+  
+    <nav class="md-nav" aria-label="How to use bandsaw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-the-library" class="md-nav__link">
+    Install the library
+  </a>
+  
+    <nav class="md-nav" aria-label="Install the library">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-stable-release-from-pypi" class="md-nav__link">
+    Use stable release from PyPI
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-from-source" class="md-nav__link">
+    Use from source
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defining-the-individual-tasks-of-your-workflow" class="md-nav__link">
+    Defining the individual tasks of your workflow
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-bandsaw" class="md-nav__link">
+    Configure bandsaw
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure bandsaw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-the-advice-chain" class="md-nav__link">
+    Choose the advice chain
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extending-bandsaw" class="md-nav__link">
+    Extending bandsaw
+  </a>
+  
+    <nav class="md-nav" aria-label="Extending bandsaw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementing-custom-advices" class="md-nav__link">
+    Implementing custom advices
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Advices
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Advices" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Advices
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advices/caching/" class="md-nav__link">
+        Caching
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advices/subprocess/" class="md-nav__link">
+        Subprocess
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advices/remote/" class="md-nav__link">
+        Remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advices/profiling/" class="md-nav__link">
+        Profiling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advices/async/" class="md-nav__link">
+        Async
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#concepts" class="md-nav__link">
+    Concepts
+  </a>
+  
+    <nav class="md-nav" aria-label="Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    Workflow
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    Tasks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executions" class="md-nav__link">
+    Executions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advice" class="md-nav__link">
+    Advice
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session" class="md-nav__link">
+    Session
+  </a>
+  
+    <nav class="md-nav" aria-label="Session">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#before-executing-a-task" class="md-nav__link">
+    before() executing a task.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executing-the-task" class="md-nav__link">
+    Executing the task
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-executing-a-task" class="md-nav__link">
+    after() executing a task
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializing-the-session" class="md-nav__link">
+    Serializing the session
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advice-chains" class="md-nav__link">
+    Advice chains
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer" class="md-nav__link">
+    Serializer
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pickle" class="md-nav__link">
+    Pickle
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json" class="md-nav__link">
+    Json
+  </a>
+  
+    <nav class="md-nav" aria-label="Json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implement-serializablevalue" class="md-nav__link">
+    Implement SerializableValue
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-valueserializer" class="md-nav__link">
+    Create a ValueSerializer
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-bandsaw" class="md-nav__link">
+    How to use bandsaw
+  </a>
+  
+    <nav class="md-nav" aria-label="How to use bandsaw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-the-library" class="md-nav__link">
+    Install the library
+  </a>
+  
+    <nav class="md-nav" aria-label="Install the library">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-stable-release-from-pypi" class="md-nav__link">
+    Use stable release from PyPI
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-from-source" class="md-nav__link">
+    Use from source
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defining-the-individual-tasks-of-your-workflow" class="md-nav__link">
+    Defining the individual tasks of your workflow
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-bandsaw" class="md-nav__link">
+    Configure bandsaw
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure bandsaw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-the-advice-chain" class="md-nav__link">
+    Choose the advice chain
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extending-bandsaw" class="md-nav__link">
+    Extending bandsaw
+  </a>
+  
+    <nav class="md-nav" aria-label="Extending bandsaw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementing-custom-advices" class="md-nav__link">
+    Implementing custom advices
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://gitlab.com/kantai/bandsaw/edit/master/docs/user_guide.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="user-guide">User guide<a class="headerlink" href="#user-guide" title="Permanent link">🔗</a></h1>
+<p>This user guide can be used as a starting point for getting a deeper understanding of
+the inner workings of the bandsaw library. It is meant for users who want to learn
+about individual details or who plan to extend its features by developing own
+advices or extensions.</p>
+<h2 id="concepts">Concepts<a class="headerlink" href="#concepts" title="Permanent link">🔗</a></h2>
+<p>First we start with some high-level concepts that we use throughout the library.
+The purpose of this sections is to explain the structure of bandsaw and introduce a
+common set of terms that helps to talk about the underlying ideas </p>
+<h3 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">🔗</a></h3>
+<p>The fundamental basis in bandsaw is the idea of a workflow. We think of a workflow as
+a single python script, that contains code for all individual steps that are performed
+in a defined sequence. </p>
+<p><img alt="Diagram of a workflow" src="../Workflow.svg" /></p>
+<p>The individual steps can have dependencies on external inputs and on results of other
+steps, so that they form a directed acyclic graph. Those steps are referred to as
+<code>Tasks</code> within bandsaw.</p>
+<p>Every single run of a workflow is assigned a unique identifier, called a "run id".</p>
+<h3 id="tasks">Tasks<a class="headerlink" href="#tasks" title="Permanent link">🔗</a></h3>
+<p>Tasks are pieces of code, that are used to process data. Task instances can be created
+by calling the <a href="../api/#bandsaw.tasks.Task.create_task"><code>create_task(cls, obj)</code></a> class
+function in the <a href="../api/#bandsaw.tasks.Task"><code>Task</code></a> class. At the moment, bandsaw
+supports only free functions defined on module level as tasks.</p>
+<p>Usually, tasks are defined by adding the <a href="../api/#bandsaw.decorator.task"><code>@bandsaw.task</code></a>
+decorator to the code that should be executed as a task.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@bandsaw</span><span class="o">.</span><span class="n">task</span>
+<span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span>
+</code></pre></div>
+<p>Each task has a unique <code>task_id</code> that is derived from the code that is executed. This can
+be used to differentiate between different tasks.</p>
+<p>Task can be given additional keyword arguments, that influence how they are executed.
+These keyword arguments can be given as keyword arguments to the decorator:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@bandsaw</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">my</span><span class="o">=</span><span class="s1">&#39;argument&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span>
+</code></pre></div>
+<h3 id="executions">Executions<a class="headerlink" href="#executions" title="Permanent link">🔗</a></h3>
+<p>Tasks can take arbitrary arguments, which means we can have multiple executions of the
+same task, that differ in the given arguments. This is captured by a
+<a href="../api/#bandsaw.execution.Execution"><code>Execution</code></a> object, which encapsulates the arguments for a specific
+task execution. Similar to the <code>task_id</code>, each execution has a separate <code>execution_id</code> that
+differentiates between different executions based on their arguments.</p>
+<h3 id="advice">Advice<a class="headerlink" href="#advice" title="Permanent link">🔗</a></h3>
+<p>Objects that implement the <a href="../api/#bandsaw.advice.Advice"><code>Advice</code></a> protocol are the
+mechanism that allows bandsaw to influence the execution of the task. Each advice class
+can implement two different methods,
+<a href="../api/#bandsaw.advice.Advice.before"><code>before(self, session)</code></a> and
+<a href="../api/#bandsaw.advice.Advice.after"><code>after(self, session)</code></a>. </p>
+<p>The <code>before()</code> method is called before the task is actually executed and allows the
+advice to make changes to the way the task is executed, e.g. running the task on a
+different system or returning a result early without executing the task at all.</p>
+<p>The <code>after()</code> method is called after the task was actually executed and returned a
+result. This allows an advice to make changes to the result or use it in a different way
+than just returning it.</p>
+<p>Both methods decide on what happens after by calling the appropriate method on the
+current <code>session</code>, the sole argument both methods are taking.</p>
+<h3 id="session">Session<a class="headerlink" href="#session" title="Permanent link">🔗</a></h3>
+<p>A <a href="../api/#bandsaw.session.Session"><code>Session</code></a> is the object, that manages the process
+of executing a task for a specific execution. It defines the different actions that advices
+can take when their <code>before()</code> or <code>after()</code> methods are called.</p>
+<p><img alt="Diagram of an advised task" src="../Session.svg" /></p>
+<p>When a task is being called within a workflow, a new <code>Session</code> object is instantiated
+with the task, an execution object containing the tasks arguments and a list of advices, called
+the "advice chain", that should be used for advising the execution.</p>
+<h4 id="before-executing-a-task">before() executing a task.<a class="headerlink" href="#before-executing-a-task" title="Permanent link">🔗</a></h4>
+<p>The session calls the <code>before()</code> methods of all advices one after another in the order
+that the advices are defined in the advice chain. Each <code>Advice</code> has to tell the session
+to either </p>
+<ul>
+<li>continue with the next advice by calling
+    <a href="../api/#bandsaw.session.Session.proceed"><code>session.proceed()</code></a></li>
+</ul>
+<p>or</p>
+<ul>
+<li>return early by skipping the following advices AND the actual task execution by
+    calling <a href="../api/#bandsaw.session.Session.conclude"><code>session.conclude(result)</code></a> and
+    providing a <code>Result</code> that should be used instead. After the advice has concluded
+    with a result, the only advices whose <code>after()</code> methods will be called are the
+    advices, that come before in the advice chain.</li>
+</ul>
+<h4 id="executing-the-task">Executing the task<a class="headerlink" href="#executing-the-task" title="Permanent link">🔗</a></h4>
+<p>If all advices of the advice chain decided to <code>proceed()</code>, the session will execute
+that task and keep the value it returns. If an exception or error is raised during
+the execution it will be stored in the <a href="../api/#bandsaw.result.Result"><code>Result</code></a>
+instance in the session.</p>
+<h4 id="after-executing-a-task">after() executing a task<a class="headerlink" href="#after-executing-a-task" title="Permanent link">🔗</a></h4>
+<p>After the task has been executed, the session begins to call the <code>after()</code> methods of
+the advices in the REVERSED order from the advice chain. This means the advice that was
+called last for <code>before()</code> is called first for <code>after()</code>.
+Now each advice can decide how to continue. Similar to <code>before()</code> there are two
+possibilities:</p>
+<ul>
+<li>continue with the current result and the next advice by calling
+    <a href="../api/#bandsaw.session.Session.proceed"><code>session.proceed()</code></a></li>
+</ul>
+<p>or</p>
+<ul>
+<li>return a different result and continue with that by calling 
+    <a href="../api/#bandsaw.session.Session.conclude"><code>session.conclude(result)</code></a> with a
+    different <code>Result</code> instance. All following advices will be called using <code>after()</code>
+    with a session containing the new result.</li>
+</ul>
+<p>Once all advices have finished, the session will unpack the result and either return
+its value to the workflow or re-raise the error.</p>
+<h4 id="serializing-the-session">Serializing the session<a class="headerlink" href="#serializing-the-session" title="Permanent link">🔗</a></h4>
+<p>In order to move the execution of a task across different python interpreters, an advice
+can use the capability of a <code>Session</code> to serialize its state to a stream and recreate it
+at a later point in time or on a different platform.</p>
+<p>For this the session contains two methods, <a href="../api/#bandsaw.session.Session.save"><code>save(stream)</code></a>
+and <a href="../api/#bandsaw.session.Session.restore"><code>restore(stream)</code></a>. Both methods will
+(de-)serialize the complete session including context, task, execution and result. The only
+thing missing here are the objects from the advice chain, since bandsaw can't enforce them
+to be serializable. This means, that the same advice chain with the same name must be
+available from the configuration at the time, the session is restored.
+For an example, how transfer to a different python interpreter can be implemented, please
+look at the implementation of the 
+<a href="https://gitlab.com/kantai/bandsaw/-/blob/mainline/bandsaw/advices/subprocess.py">SubprocessAdvice</a>.</p>
+<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">🔗</a></h3>
+<p>Bandsaw needs configuration to know which advices to apply to the individual tasks. This
+configuration is given in form of an object of the 
+<a href="../api/#bandsaw.config.Configuration"><code>bandsaw.config.Configuration</code></a> class. Just
+creating a new <code>Configuration</code> object will create an empty, but working configuration,
+that actually does nothing and executes tasks without any changes.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">bandsaw</span>
+
+<span class="n">configuration</span> <span class="o">=</span> <span class="n">bandsaw</span><span class="o">.</span><span class="n">Configuration</span><span class="p">()</span>
+</code></pre></div>
+<p>The class has all the required methods to configure the different aspects of bandsaw.</p>
+<h4 id="advice-chains">Advice chains<a class="headerlink" href="#advice-chains" title="Permanent link">🔗</a></h4>
+<p>An advice chain is a sequence of objects implementing the <code>Advice</code> protocol, that should
+be used for advising task executions. An advice chain is added to the configuration
+using the <a href="../api/#bandsaw.config.Configuration.add_advice_chain"><code>add_device_chain(*advices, name='default')</code></a>
+method. It takes instances of <code>Advice</code> as positional arguments with an optional name
+keyword argument.</p>
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+<span class="n">configuration</span><span class="o">.</span><span class="n">add_device_chain</span><span class="p">(</span>
+    <span class="n">bandsaw</span><span class="o">.</span><span class="n">advices</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">LoggingAdvice</span><span class="p">(),</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Each advice chain has a name, that can be used to choose which chain to use per task.
+If no <code>name</code> is given, the chain with name 'default' is configured. Already existing
+chains will be overwritten. So if you configure two different advice chains, with no or
+the same name, the latter will replace the former.</p>
+<h3 id="serializer">Serializer<a class="headerlink" href="#serializer" title="Permanent link">🔗</a></h3>
+<p>In order to transfer tasks between different python interpreters, bandsaw needs the
+capability to serialize tasks, their arguments and internal classes. For this bandsaw
+defines a <a href="../api/#bandsaw.serialization.serializer.Serializer"><code>Serializer</code></a> base
+class, that can be implemented to support different types of serialization.
+Which serializer to use, can be configured as part of the configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">bandsaw.serialization.json</span> <span class="kn">import</span> <span class="n">JsonSerializer</span>
+
+<span class="o">...</span>
+<span class="n">configuration</span><span class="o">.</span><span class="n">set_serializer</span><span class="p">(</span><span class="n">JsonSerializer</span><span class="p">())</span>
+</code></pre></div>
+<p>Bandsaw comes with two different serialization formats:</p>
+<h4 id="pickle">Pickle<a class="headerlink" href="#pickle" title="Permanent link">🔗</a></h4>
+<p>The <a href="../api/#bandsaw.serialization.pickle.PickleSerializer"><code>PickleSerializer</code></a> has
+the advantage, that it works out of the box with most standard python types. It uses
+the standard python <a href="https://docs.python.org/3/library/pickle.html"><code>pickle</code></a> library
+to serialize python objects and should work across different python versions. If custom
+types need to be serialized (e.g. as part of some arguments to a task), that don't work
+with pickle, support for pickle can easily be 
+<a href="https://docs.python.org/3/library/pickle.html#pickling-class-instances">added</a>.
+One disadvantage of pickle is that sometimes the serialized representation of a value
+is not unique. Since bandsaw uses the serialized form of arguments to derive the
+<code>execution_id</code> of a execution, this can lead to inconsistencies, when the same arguments can lead
+to different execution_ids.</p>
+<h4 id="json">Json<a class="headerlink" href="#json" title="Permanent link">🔗</a></h4>
+<p>The <a href="../api/#bandsaw.serialization.json.JsonSerializer"><code>JsonSerializer</code></a> uses JSON as
+format for the serialized data. The standard <a href="https://docs.python.org/3/library/json.html"><code>json</code></a>
+library supports only primitive types like strings, dict, int etc. so for all complex
+types one need to explicitly add code to serialize them. Bandsaw implements support for
+serializing exceptions, tuples and all of its internal classes, so that they can be
+serialized to json.
+To serialize a custom type to json, bandsaw offers two options:</p>
+<h5 id="implement-serializablevalue">Implement SerializableValue<a class="headerlink" href="#implement-serializablevalue" title="Permanent link">🔗</a></h5>
+<p>The easiest way to make your custom type json serializable is to inherit from the
+<a href="../api/#bandsaw.serialization.values.SerializableValue"><code>SerializableValue</code></a> base class
+and implement the abstract methods <code>serialized(self)</code> and <code>deserialize(cls, values)</code>.
+<code>serialized(self)</code> must return a value that is json serializable (e.g. a dict
+containing only primitives). The class method <code>deserialize(cls, values)</code> is given this
+value and returns a new instance of the class.</p>
+<h5 id="create-a-valueserializer">Create a ValueSerializer<a class="headerlink" href="#create-a-valueserializer" title="Permanent link">🔗</a></h5>
+<p>If the custom type can't be changed, there is the option to create a new
+<a href="../api/#bandsaw.serialization.values.ValueSerializer"><code>ValueSerializer</code></a> class that
+can serialize this type. It consists of 3 different methods:</p>
+<p><a href="../api/#bandsaw.serialization.values.ValueSerializer.can_serialize_value"><code>can_serialize_value(self, value)</code></a>
+Has to return <code>True</code> if value is of the type that this particular serializer can serialize.</p>
+<p><a href="../api/#bandsaw.serialization.values.ValueSerializer.serialize_value"><code>serialize_value(self, value)</code></a>
+Has to return the serialized representation of the type, consisting only of primitives that are json serializable.</p>
+<p><a href="../api/#bandsaw.serialization.values.ValueSerializer.deserialize_value"><code>deserialize_value(self, representation)</code></a>
+Has to return a new instance of custom_type from its serialized representation.</p>
+<p>Finally, the new <code>ValueSerializer</code> needs to be added to the json serializer as part
+of the configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="n">configuration</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">value_serializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MyValueSerializer</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="how-to-use-bandsaw">How to use bandsaw<a class="headerlink" href="#how-to-use-bandsaw" title="Permanent link">🔗</a></h2>
+<p>Now with some knowledge about the different concepts within bandsaw at our hands, let's
+dive into the topic of how to put the library to good use.</p>
+<h3 id="install-the-library">Install the library<a class="headerlink" href="#install-the-library" title="Permanent link">🔗</a></h3>
+<h4 id="use-stable-release-from-pypi">Use stable release from PyPI<a class="headerlink" href="#use-stable-release-from-pypi" title="Permanent link">🔗</a></h4>
+<p>All stable versions of bandsaw are available on <a href="https://pypi.org/project/bandsaw/">PyPI</a>
+and can be downloaded and installed from there. The easiest option to get it installed
+into your python environment is by using <code>pip</code>:</p>
+<div class="highlight"><pre><span></span><code>pip install bandsaw
+</code></pre></div>
+<h4 id="use-from-source">Use from source<a class="headerlink" href="#use-from-source" title="Permanent link">🔗</a></h4>
+<p><a href="https://gitlab.com/kantai/bandsaw/-/tree/mainline">Bandsaw's Git repository</a> is available
+for everyone and can easily be cloned into a new repository on your local machine:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> /your/local/directory
+$ git clone https://gitlab.com/kantai/bandsaw.git
+$ <span class="nb">cd</span> bandsaw
+</code></pre></div>
+<p>If you want to make changes to library, please follow the guidance in the 
+<a href="https://gitlab.com/kantai/bandsaw/-/blob/mainline/README.md">README.md</a> on how
+to setup the necessary tools for testing your changes.</p>
+<p>If you just want to use the library, it is sufficient to add the path to your local
+bandsaw repository to your <code>$PYTHONPATH</code> variable, e.g.:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PYTHONPATH</span><span class="s2">:/your/local/directory/bandsaw&quot;</span>
+</code></pre></div>
+<h3 id="defining-the-individual-tasks-of-your-workflow">Defining the individual tasks of your workflow<a class="headerlink" href="#defining-the-individual-tasks-of-your-workflow" title="Permanent link">🔗</a></h3>
+<p>In order to use bandsaw in your workflow, you first have to import its package.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">bandsaw</span>
+
+<span class="o">...</span>
+</code></pre></div>
+<p>Splitting up your workflow into individual tasks can be done by annotating the
+individual functions with the <code>bandsaw.task</code> decorator:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@bandsaw</span><span class="o">.</span><span class="n">task</span>
+<span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">x</span>
+</code></pre></div>
+<p>The decorator can be only applied to free functions in the current implementation, so it isn't
+possible to decorate methods of classes <a href="https://gitlab.com/kantai/bandsaw/-/issues/1">for now</a>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MyClass</span><span class="p">:</span>
+
+    <span class="nd">@bandsaw</span><span class="o">.</span><span class="n">task</span>
+    <span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></div>
+<h3 id="configure-bandsaw">Configure bandsaw<a class="headerlink" href="#configure-bandsaw" title="Permanent link">🔗</a></h3>
+<p>Bandsaw loads its configuration automatically at the time it is needed. This happens by
+dynamically importing a python module that contains an instance of the class 
+<a href="../api/#bandsaw.config.Configuration"><code>Configuration</code></a> assigned to the variable
+<code>configuration</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">bandsaw</span>
+
+<span class="n">configuration</span> <span class="o">=</span> <span class="n">bandsaw</span><span class="o">.</span><span class="n">Configuration</span><span class="p">()</span>
+</code></pre></div>
+<p>Bandsaw expects the configuration to be found in the python module <code>bandsaw_config</code>. The
+name of the module can be changed in two ways:</p>
+<ol>
+<li>
+<p>Set the <code>BANDSAW_CONFIG</code> environment variable to a different module name. Bandsaw reads
+    the name of the module containing the configuration from this variable if it is set.
+    So by setting it to e.g. <code>my_config</code> it will import <code>my_config</code> and take the
+    configuration from it instead.</p>
+</li>
+<li>
+<p>Add an additional keyword argument to the <code>@task</code> decorator that contains the name of the
+    configuration to use for this task:
+    <div class="highlight"><pre><span></span><code><span class="nd">@bandsaw</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="s1">&#39;my_config_module&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">x</span>
+</code></pre></div>
+    By adding the <code>config</code> keyword argument we can choose the configuration we want to use per
+    task. </p>
+</li>
+</ol>
+<p>The existence of the configuration is checked as soon as the decorator is being applied.
+If no configuration could be loaded, an <a href="../api/#bandsaw.config.get_configuration">error is raised</a>,
+usually at module import time.</p>
+<h4 id="choose-the-advice-chain">Choose the advice chain<a class="headerlink" href="#choose-the-advice-chain" title="Permanent link">🔗</a></h4>
+<p>Each task can define, which advice chain should be used. This can be done, by adding a
+keyword argument <code>chain</code> to the task decorator:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@bandsaw</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">chain</span><span class="o">=</span><span class="s1">&#39;my_chain&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">x</span>
+</code></pre></div>
+<p>If no chain exists with the specified name, a 
+<a href="../api/#bandsaw.config.Configuration.get_advice_chain"><code>KeyError</code> is raised</a>.</p>
+<h2 id="extending-bandsaw">Extending bandsaw<a class="headerlink" href="#extending-bandsaw" title="Permanent link">🔗</a></h2>
+<p>Bandsaw is extensible and allows developers to add new functionality in various ways:</p>
+<h3 id="implementing-custom-advices">Implementing custom advices<a class="headerlink" href="#implementing-custom-advices" title="Permanent link">🔗</a></h3>
+<p>Advices are the main building blocks for adding new functionality. Implementing an advice
+is easy, the only necessary work is to adhere to a protocol and follow some simple rules.</p>
+<p>The protocol is defined in <a href="../api/#bandsaw.advice.Advice"><code>Advice</code></a> and consists
+of two methods, <a href="../api/#bandsaw.advice.Advice.before"><code>before(self, session)</code></a> and
+<a href="../api/#bandsaw.advice.Advice.after"><code>after(self, session)</code></a>.</p>
+<ol>
+<li>Advices have to call the session.
+    When called via <code>before()</code> and <code>after()</code>, the advice is responsible for telling the
+    <code>session</code> how to continue. They must call once either <code>session.proceed()</code> or
+    <code>session.conclude()</code>. Failure to do so, will lead to a <code>RuntimeError</code> raised by the
+    session.</li>
+<li>Advices shouldn't keep state themselves.
+    Advice instances are used for multiple tasks. Therefore, their implementation shouldn't
+    store any task specific state themselves. If task specific state is necessary, it can be
+    easily added to the <code>context</code> of the session.</li>
+<li>Advices may be instantiated multiple times and on different machines.
+    Everytime a task is transferred to a different python interpreter, its configuration and
+    with it the configured advices are instantiated again, even if they aren't actually
+    called. Therefore, advices shouldn't do much work or interact with their environment
+    at instantiation time, but only when they are actually called via <code>after()</code> or
+    <code>before()</code>. Usually they can assume that both methods are called in the same environment
+    for the same task.</li>
+</ol>
+                
+                  
+                    
+
+<hr>
+<div class="md-source-date">
+  <small>
+    
+      Last update: 2021-11-11
+    
+  </small>
+</div>
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../getting_started/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting started" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Getting started
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../advices/caching/" class="md-footer__link md-footer__link--next" aria-label="Next: Caching" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Caching
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2021 Kantai GmbH
+          </div>
+        
+        
+          Made with
+          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+            Material for MkDocs
+          </a>
+        
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+      <a href="https://twitter.com/kantaiML" target="_blank" rel="noopener" title="kantai on Twitter" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tracking"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.fcfe8b6d.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.b1047164.min.js"></script>
+      
+        <script src=".."></script>
+      
+    
+  </body>
+</html>
