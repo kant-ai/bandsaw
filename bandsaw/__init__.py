@@ -12,4 +12,4 @@ from .serialization import (
 )
 
 
-__version__ = "0.2.dev"
+__version__ = "0.2"
