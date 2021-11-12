@@ -8,5 +8,6 @@ deploy docs:
   script:
     - aws --version
     - aws s3 sync build/ s3://$AWS_S3_BUCKET/bandsaw/ --size-only
+    - aws s3 sync build/latest/ s3://$AWS_S3_BUCKET/bandsaw/latest/
   only:
     - docs-deployment
