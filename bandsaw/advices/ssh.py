@@ -19,6 +19,16 @@ class SshBackend(abc.ABC):
     Interface definition for different SSH backends.
     """
 
+    def create_dir(self, remote, remote_path):
+        """
+        Create a directory on a remote machine.
+
+        Args:
+            remote (bandsaw.advices.ssh.Remote): Remote machine where a directory will
+                be created.
+            remote_path (str): Remote path to the directory that should be created.
+        """
+
     def copy_file_to_remote(self, remote, local_path, remote_path):
         """
         Copies a local file or directory to a remote machine.
@@ -61,11 +71,37 @@ class SshBackend(abc.ABC):
                 Its return code will be available through the exception.
         """
 
+    def delete_dir(self, remote, remote_path):
+        """
+        Delete a directory on a remote machine.
+
+        Args:
+            remote (bandsaw.advices.ssh.Remote): Remote machine where a directory will
+                be deleted.
+            remote_path (str): Remote path to the directory that should be deleted.
+        """
+
 
 class SshCommandLineBackend(SshBackend):
     """
     SSH backend that uses the SSH command line tools.
     """
+
+    def create_dir(self, remote, remote_path):
+        return self._run(
+            [
+                'ssh',
+                '-p',
+                str(remote.port),
+            ]
+            + self._key_file_option(remote)
+            + [
+                self.login(remote),
+                'mkdir',
+                '-p',
+                str(remote_path),
+            ]
+        )
 
     def copy_file_to_remote(self, remote, local_path, remote_path):
         copy_destination = self.get_remote_path(remote, remote_path)
@@ -110,6 +146,22 @@ class SshCommandLineBackend(SshBackend):
                 str(executable),
             ]
             + list(arguments),
+        )
+
+    def delete_dir(self, remote, remote_path):
+        return self._run(
+            [
+                'ssh',
+                '-p',
+                str(remote.port),
+            ]
+            + self._key_file_option(remote)
+            + [
+                self.login(remote),
+                'rm',
+                '-Rf',
+                str(remote_path),
+            ]
         )
 
     @staticmethod
@@ -229,10 +281,21 @@ class SshAdvice(Advice):
         remote_name = session.task.kwargs.get('ssh', {}).get('remote', 'default')
         remote = self.remotes[remote_name]
 
+        remote_run_directory = remote.directory / session.execution.execution_id
+        logger.info(
+            "Creating run directory %s on host %s",
+            remote_run_directory,
+            remote.host,
+        )
+        self._backend.create_dir(
+            remote,
+            remote_run_directory,
+        )
+
         logger.info("Copying over distribution archive to host %s", remote.host)
         distribution_archive_path = session.distribution_archive.path
         remote_distribution_archive_path = (
-            remote.directory / distribution_archive_path.name
+            remote_run_directory / distribution_archive_path.name
         )
         self._backend.copy_file_to_remote(
             remote,
@@ -241,14 +304,14 @@ class SshAdvice(Advice):
         )
 
         logger.info("Copying over session to host %s", remote.host)
-        remote_session_in_path = remote.directory / session_in_path.name
+        remote_session_in_path = remote_run_directory / session_in_path.name
         self._backend.copy_file_to_remote(
             remote,
             session_in_path,
             remote_session_in_path,
         )
 
-        remote_session_out_path = remote.directory / session_out_path.name
+        remote_session_out_path = remote_run_directory / session_out_path.name
 
         logger.info(
             "Running remote process using interpreter %s", remote.interpreter.executable
@@ -274,6 +337,13 @@ class SshAdvice(Advice):
             remote_session_out_path,
             session_out_path,
         )
+
+        logger.info(
+            "Cleaning up remote directory %s on host %s",
+            remote_run_directory,
+            remote.host,
+        )
+        self._backend.delete_dir(remote, remote_run_directory)
 
         logger.info("Restore local session from %s", session_out_path)
         with io.FileIO(str(session_out_path), mode='r') as stream:
