@@ -38,9 +38,15 @@ class TestTask(unittest.TestCase):
 
         self.assertTrue(result, {'with': 'arguments'})
 
+    def test_decorator_with_explicit_default_configuration(self):
+        task(config=__name__)
+
     def test_decorator_fails_with_invalid_configuration(self):
         with self.assertRaisesRegex(ModuleNotFoundError, "No module"):
             task(config='not_existing_config')
+
+    def test_decorator_with_explicit_default_chain(self):
+        task(chain='default')(function_without_arguments)
 
     def test_decorator_check_existence_of_chain(self):
         with self.assertRaisesRegex(ValueError, "Unknown advice chain"):

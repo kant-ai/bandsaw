@@ -60,8 +60,8 @@ def task(*task_args, config=None, chain=None, **task_kwargs):
     configuration = get_configuration(config_module)
 
     chain_name = chain or 'default'
-    chain = configuration.get_advice_chain(chain_name)
-    if chain is None:
+    advice_chain = configuration.get_advice_chain(chain_name)
+    if advice_chain is None:
         raise ValueError(f"Unknown advice chain {chain_name}")
 
     def decorate_function(func):
@@ -96,7 +96,9 @@ def task(*task_args, config=None, chain=None, **task_kwargs):
 
     if len(task_args) == 1 and len(task_kwargs) == 0:
         return decorate_function(task_args[0])
-    if len(task_args) == 0 and len(task_kwargs) > 0:
+    if len(task_args) == 0 and (
+        len(task_kwargs) > 0 or chain is not None or config is not None
+    ):
         return decorate_function
     # This shouldn't happen if the decorator is properly used.
     raise RuntimeError("Invalid 'task' decorator.")
