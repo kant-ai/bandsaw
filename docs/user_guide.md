@@ -379,6 +379,17 @@ def my_function(x):
 If no chain exists with the specified name, a 
 [`KeyError` is raised](../api/#bandsaw.config.Configuration.get_advice_chain).
 
+
+### Executing the workflow
+
+Bandsaw doesn't depend on a special tool or script to execute the workflow, but is only added
+in form of a library. Therefore, the workflow script itself is executed like a normal python
+script:
+
+```bash
+$ python my_workflow.py
+```
+
 ## Extending bandsaw
 
 Bandsaw is extensible and allows developers to add new functionality in various ways:
