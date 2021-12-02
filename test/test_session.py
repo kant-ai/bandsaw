@@ -1,14 +1,94 @@
 import io
+import pathlib
 import pickle
 import threading
 import unittest
 import unittest.mock
+import zipfile
 
 from bandsaw.advice import Advice
 from bandsaw.config import Configuration
 from bandsaw.extensions import Extension
 from bandsaw.execution import Execution
-from bandsaw.session import Session, _Moderator
+from bandsaw.session import Attachment, Attachments, Session, _Moderator
+
+
+class TestAttachments(unittest.TestCase):
+
+    def setUp(self):
+        self.attachments = Attachments()
+
+    def test_attachments_is_empty_default(self):
+        self.assertFalse(self.attachments)
+        self.assertEqual(0, len(self.attachments))
+
+    def test_attachments_can_be_used_as_mapping(self):
+        self.attachments['my.item'] = __file__
+        self.assertIsNotNone(self.attachments['my.item'])
+        self.assertTrue(self.attachments)
+        self.assertEqual(1, len(self.attachments))
+
+    def test_attachments_can_be_paths(self):
+        self.attachments['my.item'] = pathlib.Path(__file__)
+        self.assertIsNotNone(self.attachments['my.item'])
+        self.assertTrue(self.attachments)
+        self.assertEqual(1, len(self.attachments))
+
+    def test_attachments_can_be_iterated_over(self):
+        self.attachments['my.item'] = __file__
+        self.attachments['other.item'] = __file__
+        iterator = iter(self.attachments)
+        self.assertEqual('my.item', next(iterator))
+        self.assertEqual('other.item', next(iterator))
+
+    def test_attachments_values_are_attachments(self):
+        self.attachments['my.item'] = __file__
+        value = self.attachments['my.item']
+        self.assertIsInstance(value, Attachment)
+
+    def test_setting_attachments_must_be_paths_or_strings(self):
+        with self.assertRaisesRegex(TypeError, "Invalid type for value"):
+            self.attachments['my.item'] = 1
+
+    def test_setting_attachments_path_must_exist(self):
+        with self.assertRaisesRegex(ValueError, "File does not exist"):
+            self.attachments['my.item'] = "not-existing"
+
+    def test_setting_attachments_path_must_be_file(self):
+        with self.assertRaisesRegex(ValueError, "Path is not a file"):
+            self.attachments['my.item'] = pathlib.Path(__file__).parent
+
+    def test_attachments_cant_be_overwritten(self):
+        self.attachments['my.item'] = __file__
+        with self.assertRaisesRegex(KeyError, "Attachment 'my.item' does already exist"):
+            self.attachments['my.item'] = __file__
+
+    def test_file_attachments_can_be_read(self):
+        self.attachments['my.item'] = __file__
+        with self.attachments['my.item'].open() as stream:
+            self.assertEqual(b'import io\n', stream.readline())
+
+    def test_file_attachments_can_return_file_size(self):
+        self.attachments['my.item'] = __file__
+        self.assertEqual(pathlib.Path(__file__).stat().st_size, self.attachments['my.item'].size)
+
+    def test_attachments_can_be_initialized_from_zip_file(self):
+        zip_file = zipfile.ZipFile(pathlib.Path(__file__).parent / 'attachments.zip')
+        attachments = Attachments(zip_file)
+        self.assertIn('test.txt', attachments)
+        self.assertIn('other.log', attachments)
+        self.assertNotIn('no.attachment', attachments)
+
+    def test_zip_attachments_can_be_read(self):
+        zip_file = zipfile.ZipFile(pathlib.Path(__file__).parent / 'attachments.zip')
+        attachments = Attachments(zip_file)
+        with attachments['test.txt'].open() as stream:
+            self.assertEqual(b'My test.txt content.', stream.read())
+
+    def test_zip_attachments_can_return_file_size(self):
+        zip_file = zipfile.ZipFile(pathlib.Path(__file__).parent / 'attachments.zip')
+        attachments = Attachments(zip_file)
+        self.assertEqual(20, attachments['test.txt'].size)
 
 
 class MyTask:
@@ -157,6 +237,26 @@ class TestSession(unittest.TestCase):
             )
             self.assertEqual(session._advice_chain, restored_session._advice_chain)
             self.assertEqual(session.context, restored_session.context)
+
+    def test_session_restore_includes_attachments(self):
+        with unittest.mock.patch("bandsaw.session.get_configuration", return_value=self.config):
+            session = Session(MyTask(), Execution('1'), self.config)
+            session.attachments['my.attachment'] = __file__
+
+            stream = io.BytesIO()
+            session.save(stream)
+            stream.seek(0)
+
+            restored_session = Session().restore(stream)
+
+            self.assertEqual(
+                session.attachments['my.attachment'].size,
+                restored_session.attachments['my.attachment'].size,
+            )
+            self.assertEqual(
+                session.attachments['my.attachment'].open().read(),
+                restored_session.attachments['my.attachment'].open().read(),
+            )
 
     def test_session_runs_parts_in_new_thread(self):
         self.config.add_advice_chain(MyConcurrentAdvice(), name='concurrent')

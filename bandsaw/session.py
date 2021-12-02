@@ -1,7 +1,10 @@
 """Contains classes for representing an advising session"""
+import abc
+import collections
 import io
 import json
 import logging
+import pathlib
 import zipfile
 
 from .config import get_configuration
@@ -11,6 +14,128 @@ from .serialization import SerializableValue
 
 
 logger = logging.getLogger(__name__)
+
+
+class Attachment(abc.ABC):
+    """
+    Class that represents a single file that as been attached to a session.
+    """
+
+    @abc.abstractmethod
+    def open(self):
+        """
+        Opens the attachment for reading.
+
+        Returns:
+            binary stream for reading.
+        """
+
+    @property
+    @abc.abstractmethod
+    def size(self):
+        """Return the size of the attachment in bytes"""
+
+
+class _FileAttachment(Attachment):
+    def __init__(self, path):
+        self._path = path
+
+    def open(self):
+        return self._path.open('rb')
+
+    @property
+    def size(self):
+        return self._path.stat().st_size
+
+
+class _ZipAttachment(Attachment):
+    def __init__(self, zip_file, path):
+        self._zip_file = zip_file
+        self._path = path
+
+    def open(self):
+        return self._zip_file.open(self._path)
+
+    @property
+    def size(self):
+        return self._zip_file.getinfo(self._path).file_size
+
+
+class Attachments(collections.abc.Mapping):
+    """
+    A mapping that contains attachments.
+
+    Attachments can only be added, but neither deleted nor overwritten. Their names
+    must be valid file names without directories.
+
+    Attachments itself is a mapping class and can be used similar to a dictionary.
+    When a new attachments is added, it must be path to an existing file, either as
+    `str` or `pathlib.Path`. When an attachment is accessed, an object of type
+    `Attachment` is returned, that gives access to the size of the attachment and
+    allows to read its content.
+
+    Examples:
+        >>> attachments = Attachments()
+        >>> attachments['my.attachment'] = '/path/to/file'
+        >>> attachment = attachments['my.attachment']
+        >>> attachment.size
+        1234
+        >>> attachment.open().readall()
+        b'My binary file content.'
+
+    """
+
+    def __init__(self, zip_file=None):
+        """
+        Creates a new container for attachments.
+
+        Args:
+            zip_file (zipfile.ZipFile): An already existing zip file, which can be
+                used for initializing with pre-existing attachments.
+        """
+        self._items = {}
+        if zip_file is not None:
+            self._add_attachments_from_zip(zip_file)
+
+    def _add_attachments_from_zip(self, zip_file):
+        for file_path in zip_file.namelist():
+            if file_path[:12] == 'attachments/':
+                attachment_name = file_path.split('/', 1)[1]
+                self._items[attachment_name] = _ZipAttachment(zip_file, file_path)
+
+    def store(self, zip_file):
+        """
+        Stores all attachments in a zip file.
+
+        Args:
+            zip_file (zipfile.ZipFile): The zip file where the attachments should be
+                stored in.
+        """
+        for name, attachment in self._items.items():
+            with attachment.open() as stream:
+                zip_file.writestr('attachments/' + name, stream.read())
+
+    def __setitem__(self, key, path):
+        if key in self._items:
+            raise KeyError(f"Attachment '{key}' does already exist")
+        if isinstance(path, str):
+            path = pathlib.Path(path)
+        if not isinstance(path, pathlib.Path):
+            raise TypeError("Invalid type for value, must be str or Path")
+        if not path.exists():
+            raise ValueError("File does not exist")
+        if not path.is_file():
+            raise ValueError("Path is not a file")
+        self._items[key] = _FileAttachment(path)
+
+    def __getitem__(self, key):
+        return self._items[key]
+
+    def __iter__(self):
+        return iter(self._items)
+
+    def __len__(self):
+        return len(self._items)
 
 
 class Session:
@@ -31,10 +156,15 @@ class Session:
         context (bandsaw.context.Context): The context that can be used for advices
             to store state.
         result (bandsaw.result.Result): Result of the task if already computed.
-            Otherwise `None`.
+            Otherwise, `None`.
+        attachments (bandsaw.session.Attachments): A mapping of files that have been
+            attached to the session.
         _configuration (bandsaw.config.Configuration): The configuration that is being
             used for advising this task.
     """
+
+    # pylint: disable=too-many-instance-attributes
+    # Eight is reasonable in this case.
 
     def __init__(
         self,
@@ -52,6 +182,7 @@ class Session:
         self.execution = execution
         self.context = {}
         self.result = None
+        self.attachments = Attachments()
         self._configuration = configuration
         self._advice_chain = advice_chain
         self._moderator = None
@@ -145,32 +276,37 @@ class Session:
 
     def _load_from_zip(self, stream):
 
-        with zipfile.ZipFile(stream, 'r') as archive:
+        # We don't use with here, because we don't want to close the zip file
+        # This allows the attachment's container, to access the attachments from the
+        # archive
+        archive = zipfile.ZipFile(stream, 'r')  # pylint: disable=consider-using-with
 
-            session_json = json.loads(archive.read('session.json'))
-            self._configuration = get_configuration(session_json['configuration'])
-            self._advice_chain = session_json['advice_chain']
+        session_json = json.loads(archive.read('session.json'))
+        self._configuration = get_configuration(session_json['configuration'])
+        self._advice_chain = session_json['advice_chain']
 
-            serializer = self._configuration.serializer
+        serializer = self._configuration.serializer
 
-            stream = io.BytesIO(archive.read('task.dat'))
-            self.task = serializer.deserialize(stream)
+        stream = io.BytesIO(archive.read('task.dat'))
+        self.task = serializer.deserialize(stream)
 
-            stream = io.BytesIO(archive.read('execution.dat'))
-            self.execution = serializer.deserialize(stream)
+        stream = io.BytesIO(archive.read('execution.dat'))
+        self.execution = serializer.deserialize(stream)
 
-            stream = io.BytesIO(archive.read('context.dat'))
-            self.context = serializer.deserialize(stream)
+        stream = io.BytesIO(archive.read('context.dat'))
+        self.context = serializer.deserialize(stream)
 
-            stream = io.BytesIO(archive.read('result.dat'))
-            self.result = serializer.deserialize(stream)
+        stream = io.BytesIO(archive.read('result.dat'))
+        self.result = serializer.deserialize(stream)
 
-            stream = io.BytesIO(archive.read('moderator.dat'))
-            self._moderator = serializer.deserialize(stream)
-            if self._moderator is not None:
-                self._moderator.advice_chain = self._configuration.get_advice_chain(
-                    self._advice_chain
-                )
+        stream = io.BytesIO(archive.read('moderator.dat'))
+        self._moderator = serializer.deserialize(stream)
+        if self._moderator is not None:
+            self._moderator.advice_chain = self._configuration.get_advice_chain(
+                self._advice_chain
+            )
+
+        self.attachments = Attachments(archive)
 
     def _store_as_zip(self, stream):
         serializer = self._configuration.serializer
@@ -204,6 +340,8 @@ class Session:
             serializer.serialize(self._moderator, stream)
             archive.writestr('moderator.dat', stream.getvalue())
 
+            self.attachments.store(archive)
+
 
 class _Moderator(SerializableValue):
     """
@@ -216,7 +354,7 @@ class _Moderator(SerializableValue):
     the order, that the advices are defined in the `advice_chain`. Then the task is
     executed and at last we apply the `after()` in the reversed order of the advices.
     This means that the first advice, whose `before()` method was called before all
-    others, will has its `after()` method called last.
+    others, will have its `after()` method called last.
 
     Attributes:
         before_called (int): The number of advices where `before()` was called.
