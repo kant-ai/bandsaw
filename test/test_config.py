@@ -1,5 +1,6 @@
 import os
-import unittest
+import shutil
+import unittest.mock
 
 from bandsaw.config import Configuration, get_configuration, CONFIGURATION_MODULE_ENV_VARIABLE
 
@@ -50,6 +51,17 @@ class TestConfiguration(unittest.TestCase):
         config2.module_name = 'another_config'
 
         self.assertNotEqual(hash(config1), hash(config2))
+
+    def test_configuration_has_existing_temp_directory(self):
+        config = Configuration()
+        self.assertIsNotNone(config.temporary_directory)
+        self.assertTrue(config.temporary_directory.exists())
+        self.assertTrue(config.temporary_directory.is_dir())
+
+    def test_temp_directory_is_registered_for_cleaning_up(self):
+        with unittest.mock.patch('bandsaw.config.atexit.register') as register_mock:
+            config = Configuration()
+        register_mock.assert_called_with(shutil.rmtree, str(config.temporary_directory))
 
 
 class TestGetConfiguration(unittest.TestCase):

@@ -1,7 +1,11 @@
 """Contains the class and functions to configure bandsaw."""
+import atexit
 import importlib
 import logging
 import os
+import pathlib
+import shutil
+import tempfile
 import traceback
 import typing
 
@@ -19,6 +23,10 @@ CONFIGURATION_MODULE_DEFAULT = 'bandsaw_config'
 class Configuration:
     """
     Class that represents a configuration for bandsaw.
+
+    Attributes:
+        temporary_directory (pathlib.Path): The path to a directory where temporary
+            files are stored.
     """
 
     def __init__(self):
@@ -31,6 +39,8 @@ class Configuration:
         self.module_name = get_loaded_module_name_by_path(config_module_file_path)
         logger.info("Config created in module: %s", self.module_name)
         self.distribution_modules = []
+        self.temporary_directory = None
+        self.set_temp_directory(tempfile.mkdtemp(prefix='bandsaw'))
 
     def add_advice_chain(self, *advices, name='default'):
         """
@@ -115,6 +125,17 @@ class Configuration:
         """
         self.distribution_modules.extend(modules)
         return self
+
+    def set_temp_directory(self, directory):
+        """
+        Sets the temporary directory.
+
+        Args:
+            directory (Union[str, pathlib.Path]): Path to the directory, where
+                temporary files will be stored.
+        """
+        self.temporary_directory = pathlib.Path(directory)
+        atexit.register(shutil.rmtree, str(self.temporary_directory))
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
