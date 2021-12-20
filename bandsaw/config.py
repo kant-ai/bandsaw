@@ -135,7 +135,10 @@ class Configuration:
                 temporary files will be stored.
         """
         self.temporary_directory = pathlib.Path(directory)
-        atexit.register(shutil.rmtree, str(self.temporary_directory))
+        atexit.register(
+            lambda path: shutil.rmtree(path, ignore_errors=True),
+            str(self.temporary_directory),
+        )
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):

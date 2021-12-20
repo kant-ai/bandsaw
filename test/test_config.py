@@ -61,7 +61,11 @@ class TestConfiguration(unittest.TestCase):
     def test_temp_directory_is_registered_for_cleaning_up(self):
         with unittest.mock.patch('bandsaw.config.atexit.register') as register_mock:
             config = Configuration()
-        register_mock.assert_called_with(shutil.rmtree, str(config.temporary_directory))
+        register_mock.assert_called()
+        # Call the registered function to check that it deletes the directory
+        self.assertTrue(config.temporary_directory.exists())
+        register_mock.call_args[0][0](register_mock.call_args[0][1])
+        self.assertFalse(config.temporary_directory.exists())
 
 
 class TestGetConfiguration(unittest.TestCase):
