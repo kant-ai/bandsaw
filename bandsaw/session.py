@@ -9,6 +9,7 @@ import zipfile
 
 from .config import get_configuration
 from .distribution import get_distribution_archive
+from .identifier import identifier_from_string
 from .run import get_run_id
 from .serialization import SerializableValue
 
@@ -186,6 +187,7 @@ class Session:
         self._configuration = configuration
         self._advice_chain = advice_chain
         self._moderator = None
+        self._session_id = None
 
     def initiate(self):
         """
@@ -218,6 +220,19 @@ class Session:
                 self.task, self.execution, self.context, self.result
             )
         return self.result
+
+    @property
+    def session_id(self):
+        """The id of this session."""
+        if self._session_id is None:
+            if self.task is None or self.execution is None:
+                raise ValueError("Incomplete session, missing task or execution.")
+            self._session_id = identifier_from_string(
+                ":".join(
+                    [self.run_id, self.task.task_id, self.execution.execution_id],
+                )
+            )
+        return self._session_id
 
     @property
     def serializer(self):
@@ -284,6 +299,7 @@ class Session:
         session_json = json.loads(archive.read('session.json'))
         self._configuration = get_configuration(session_json['configuration'])
         self._advice_chain = session_json['advice_chain']
+        self._session_id = session_json['session_id']
 
         serializer = self._configuration.serializer
 
@@ -316,6 +332,7 @@ class Session:
                 {
                     'configuration': self._configuration.module_name,
                     'advice_chain': self._advice_chain,
+                    'session_id': self.session_id,
                 }
             )
             archive.writestr('session.json', session_json)

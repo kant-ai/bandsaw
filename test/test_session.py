@@ -93,6 +93,9 @@ class TestAttachments(unittest.TestCase):
 
 class MyTask:
 
+    def __init__(self, task_id='t'):
+        self.task_id = task_id
+
     @staticmethod
     def execute(_):
         return True
@@ -151,6 +154,9 @@ class MyConcurrentAdvice(Advice):
 
 class MyConcurrentTask:
 
+    def __init__(self, task_id='t'):
+        self.task_id = task_id
+
     @staticmethod
     def execute(_):
         return threading.current_thread().ident
@@ -161,6 +167,42 @@ class TestSession(unittest.TestCase):
     def setUp(self):
         self.config = Configuration()
         self.config.add_advice_chain(MySavingAdvice(), name='save')
+
+    def test_session_contains_session_id(self):
+        session = Session(MyTask(), Execution('1'), self.config)
+        result = session.session_id
+        self.assertIsNotNone(result)
+
+    def test_session_id_is_cached(self):
+        session = Session(MyTask(), Execution('1'), self.config)
+        self.assertEqual(session.session_id, session.session_id)
+
+    def test_session_id_changes_with_different_execution_id(self):
+        session1 = Session(MyTask(), Execution('1'), self.config)
+        session2 = Session(MyTask(), Execution('2'), self.config)
+        self.assertNotEqual(session1.session_id, session2.session_id)
+
+    def test_session_id_changes_with_different_task_id(self):
+        session1 = Session(MyTask('1'), Execution('1'), self.config)
+        session2 = Session(MyTask('2'), Execution('1'), self.config)
+        self.assertNotEqual(session1.session_id, session2.session_id)
+
+    def test_session_id_changes_with_different_run_id(self):
+        with unittest.mock.patch("bandsaw.session.get_run_id", return_value='1'):
+            session = Session(MyTask(), Execution('1'), self.config)
+            session_id1 = session.session_id
+        with unittest.mock.patch("bandsaw.session.get_run_id", return_value='2'):
+            session = Session(MyTask(), Execution('1'), self.config)
+            session_id2 = session.session_id
+        self.assertNotEqual(session_id1, session_id2)
+
+    def test_session_id_raises_with_incomplete_session(self):
+        with self.assertRaisesRegex(ValueError, "Incomplete session"):
+            session = Session(task=MyTask(), configuration=self.config)
+            session.session_id
+        with self.assertRaisesRegex(ValueError, "Incomplete session"):
+            session = Session(execution=Execution('1'), configuration=self.config)
+            session.session_id
 
     def test_empty_advice_returns_execution_result(self):
         session = Session(MyTask(), Execution('1'), self.config)
@@ -256,6 +298,22 @@ class TestSession(unittest.TestCase):
             self.assertEqual(
                 session.attachments['my.attachment'].open().read(),
                 restored_session.attachments['my.attachment'].open().read(),
+            )
+
+    def test_restored_session_has_same_session_id(self):
+        with unittest.mock.patch("bandsaw.session.get_configuration", return_value=self.config):
+            session = Session(MyTask(), Execution('1'), self.config)
+            session.attachments['my.attachment'] = __file__
+
+            stream = io.BytesIO()
+            session.save(stream)
+            stream.seek(0)
+
+            restored_session = Session().restore(stream)
+
+            self.assertEqual(
+                session.session_id,
+                restored_session.session_id,
             )
 
     def test_session_runs_parts_in_new_thread(self):

@@ -92,6 +92,10 @@ When a task is being called within a workflow, a new `Session` object is instant
 with the task, an execution object containing the tasks arguments and a list of advices, called
 the "advice chain", that should be used for advising the execution.
 
+Each session has a unique `session_id` that is derived from its task, the execution of
+the task and the current `run_id`. This makes sure, that the same task with the same
+arguments yields different session ids across multiple runs.
+
 #### before() executing a task.
 The session calls the `before()` methods of all advices one after another in the order
 that the advices are defined in the advice chain. Each `Advice` has to tell the session
