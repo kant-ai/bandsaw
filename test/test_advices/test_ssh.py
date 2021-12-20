@@ -1,7 +1,6 @@
 import io
 import os
 import pathlib
-import shutil
 import unittest.mock
 
 from bandsaw.advices.ssh import SshAdvice, Remote, SshBackend, SshCommandLineBackend
@@ -47,6 +46,15 @@ class TestSshCommandLineBackend(unittest.TestCase):
     def tearDown(self):
         self.check_call_patcher.stop()
 
+    def test_create_dir(self):
+        self.backend.create_dir(
+            self.remote,
+            pathlib.Path('/my/remote/path'),
+        )
+        self.check_call_mock.assert_called_with(
+            ['ssh', '-p', '22', 'my_user@test.host', 'mkdir', '-p', '/my/remote/path'],
+        )
+
     def test_copy_file_to_remote(self):
         self.backend.copy_file_to_remote(
             self.remote,
@@ -77,6 +85,24 @@ class TestSshCommandLineBackend(unittest.TestCase):
             ['ssh', '-p', '22', 'my_user@test.host', '/my/executable', 'argument'],
         )
 
+    def test_delete_dir(self):
+        self.backend.delete_dir(
+            self.remote,
+            pathlib.Path('/my/remote/path'),
+        )
+        self.check_call_mock.assert_called_with(
+            ['ssh', '-p', '22', 'my_user@test.host', 'rm', '-Rf', '/my/remote/path'],
+        )
+
+    def test_create_dir_with_key_file(self):
+        self.backend.create_dir(
+            self.remote_with_key,
+            pathlib.Path('/my/remote/path'),
+        )
+        self.check_call_mock.assert_called_with(
+            ['ssh', '-p', '22',  '-i', '/my/key', 'my_user@test.host', 'mkdir', '-p', '/my/remote/path'],
+        )
+
     def test_copy_file_to_remote_with_key_file(self):
         self.backend.copy_file_to_remote(
             self.remote_with_key,
@@ -105,6 +131,15 @@ class TestSshCommandLineBackend(unittest.TestCase):
         )
         self.check_call_mock.assert_called_with(
             ['ssh', '-p', '22', '-i', '/my/key', 'my_user@test.host', '/my/executable', 'argument'],
+        )
+
+    def test_delete_dir_with_key_file(self):
+        self.backend.delete_dir(
+            self.remote_with_key,
+            pathlib.Path('/my/remote/path'),
+        )
+        self.check_call_mock.assert_called_with(
+            ['ssh', '-p', '22',  '-i', '/my/key', 'my_user@test.host', 'rm', '-Rf', '/my/remote/path'],
         )
 
 
