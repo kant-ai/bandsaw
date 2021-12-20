@@ -1,6 +1,7 @@
 import io
 import pathlib
 import pickle
+import shutil
 import threading
 import unittest
 import unittest.mock
@@ -336,6 +337,21 @@ class TestSession(unittest.TestCase):
             session = Session(MyTask(), Execution('1'), self.config)
             run_id = session.run_id
             self.assertEqual(run_id, 'run-id')
+
+    def test_session_creates_temporary_directory(self):
+        session = Session(MyTask(), Execution('1'), self.config)
+        temp_dir_path = session.temp_dir
+        self.assertIsNotNone(temp_dir_path)
+        self.assertTrue(temp_dir_path.exists())
+        self.assertTrue(temp_dir_path.is_dir())
+        shutil.rmtree(temp_dir_path)
+
+    def test_session_temporary_directory_is_cached(self):
+        session = Session(MyTask(), Execution('1'), self.config)
+        temp_dir_path1 = session.temp_dir
+        temp_dir_path2 = session.temp_dir
+        self.assertIs(temp_dir_path1, temp_dir_path2)
+        shutil.rmtree(temp_dir_path1)
 
 
 class MyAdvice1(Advice):

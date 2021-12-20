@@ -165,7 +165,7 @@ class Session:
     """
 
     # pylint: disable=too-many-instance-attributes
-    # Eight is reasonable in this case.
+    # is reasonable in this case.
 
     def __init__(
         self,
@@ -188,6 +188,7 @@ class Session:
         self._advice_chain = advice_chain
         self._moderator = None
         self._session_id = None
+        self._temp_dir = None
 
     def initiate(self):
         """
@@ -248,6 +249,25 @@ class Session:
     def run_id(self):
         """The run id of the workflow."""
         return get_run_id()
+
+    @property
+    def temp_dir(self):
+        """
+        Temporary directory where session specific files can be written to.
+
+        This directory is meant for storing temporary files, that are used by the
+        individual `Advice` instances. The directory is already created and will be
+        automatically deleted with the end of the python interpreter, nonetheless,
+        the advices writing files to the directory should if possible take care of
+        removing them if no longer needed.
+
+        Returns:
+            pathlib.Path: Path to the temporary directory.
+        """
+        if self._temp_dir is None:
+            self._temp_dir = self._configuration.temporary_directory / self.session_id
+            self._temp_dir.mkdir(exist_ok=True)
+        return self._temp_dir
 
     def proceed(self):
         """

@@ -4,7 +4,6 @@ import logging
 import os
 import pathlib
 import subprocess
-import tempfile
 
 
 from ..advice import Advice
@@ -29,28 +28,24 @@ class SubprocessAdvice(Advice):
                 the subprocess. If `None` the same interpreter will be used.
         """
         if directory is None:
-            self.directory = pathlib.Path(tempfile.mkdtemp())
+            self.directory = None
+            logger.info("Using temporary session directory")
         else:
             self.directory = pathlib.Path(directory)
-        logger.info("Using directory %s", self.directory)
+            logger.info("Using directory %s", self.directory)
         self.interpreter = interpreter or Interpreter()
         super().__init__()
 
     def before(self, session):
         logger.info("before called in process %d", os.getpid())
 
-        session_id = session.execution.execution_id
-
-        session_in_file, session_in_path = tempfile.mkstemp(
-            '.zip', 'in-' + session_id + '-', self.directory
-        )
-        session_out_file, session_out_path = tempfile.mkstemp(
-            '.zip', 'out-' + session_id + '-', self.directory
-        )
+        temp_dir = self.directory or session.temp_dir
+        session_in_path = temp_dir / f'session-{session.session_id}-in.zip'
+        session_out_path = temp_dir / f'session-{session.session_id}-out.zip'
         archive_path = session.distribution_archive.path
 
         logger.info("Writing session to %s", session_in_path)
-        with io.FileIO(session_in_file, mode='w') as stream:
+        with io.FileIO(session_in_path, mode='w') as stream:
             session.save(stream)
 
         logger.info(
@@ -77,8 +72,16 @@ class SubprocessAdvice(Advice):
         logger.info("Sub process exited")
 
         logger.info("Reading session from %s", session_out_path)
-        with io.FileIO(session_out_file, mode='r') as stream:
+        with io.FileIO(session_out_path, mode='r') as stream:
             session.restore(stream)
+
+        logger.info(
+            "Cleaning up session files %s, %s",
+            session_in_path,
+            session_out_path,
+        )
+        session_in_path.unlink()
+        session_out_path.unlink()
 
         logger.info("proceed() session in parent process")
         session.proceed()

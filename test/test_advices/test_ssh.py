@@ -1,6 +1,7 @@
 import io
 import os
 import pathlib
+import tempfile
 import unittest.mock
 
 from bandsaw.advices.ssh import SshAdvice, Remote, SshBackend, SshCommandLineBackend
@@ -198,6 +199,32 @@ class TestSshAdvice(unittest.TestCase):
         backend_spy.execute_remote.assert_called()
         backend_spy.copy_file_from_remote.assert_called()
         backend_spy.copy_file_to_remote.assert_called()
+
+    def test_temp_dir_is_clean(self):
+        config = Configuration()
+        session = Session(Task.create_task(_get_pid), Execution('r'), config)
+        dummy_backend = DummyBackend(session)
+        backend_spy = unittest.mock.Mock(wraps=dummy_backend)
+        temp_dir = tempfile.mkdtemp()
+        advice = SshAdvice(
+                backend=backend_spy,
+                directory=temp_dir,
+            ).add_remote(
+            Remote(
+                host='test.host',
+                user='bandsaw',
+                interpreter=Interpreter(
+                    path=[],
+                    executable='/usr/bin/python3',
+                ),
+                directory='/home/bandsaw',
+            ),
+        )
+        config.add_advice_chain(advice)
+
+        with unittest.mock.patch("bandsaw.session.get_configuration", return_value=config):
+            session.initiate()
+        self.assertEqual(0, len(list(advice.directory.iterdir())))
 
     def test_directory_for_data_exchange_can_be_configured(self):
         path = pathlib.Path('/my/directory')

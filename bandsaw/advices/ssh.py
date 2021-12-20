@@ -5,7 +5,6 @@ import logging
 import os
 import pathlib
 import subprocess
-import tempfile
 
 from bandsaw.advice import Advice
 from bandsaw.user import get_current_username
@@ -236,14 +235,15 @@ class SshAdvice(Advice):
 
         Args:
             directory (str): The local directory where temporary files are stored to
-                exchange data between the local and the remote machine. If `None` a
-                temporary directory is used.
+                exchange data between the local and the remote machine. If `None`, the
+                temporary directory from the session is used.
         """
         if directory is None:
-            self.directory = pathlib.Path(tempfile.mkdtemp())
+            self.directory = None
+            logger.info("Using session temporary directory for exchange data")
         else:
             self.directory = pathlib.Path(directory)
-        logger.info("Using directory %s for exchange data", self.directory)
+            logger.info("Using directory %s for exchange data", self.directory)
 
         self.remotes = {}
         self._backend = backend
@@ -265,14 +265,10 @@ class SshAdvice(Advice):
 
     def before(self, session):
 
-        session_id = session.execution.execution_id
+        temp_dir = self.directory or session.temp_dir
 
-        session_in_path = pathlib.Path(
-            tempfile.mktemp('.zip', 'in-' + session_id + '-', self.directory)
-        )
-        session_out_path = pathlib.Path(
-            tempfile.mktemp('.zip', 'out-' + session_id + '-', self.directory)
-        )
+        session_in_path = temp_dir / f'session-{session.session_id}-in.zip'
+        session_out_path = temp_dir / f'session-{session.session_id}-out.zip'
 
         logger.info("Writing session to %s", session_in_path)
         with io.FileIO(str(session_in_path), mode='w') as stream:
@@ -348,6 +344,14 @@ class SshAdvice(Advice):
         logger.info("Restore local session from %s", session_out_path)
         with io.FileIO(str(session_out_path), mode='r') as stream:
             session.restore(stream)
+
+        logger.info(
+            "Cleaning up local sessions %s, %s",
+            session_in_path,
+            session_out_path,
+        )
+        session_in_path.unlink()
+        session_out_path.unlink()
 
         logger.info("Proceed local session")
         session.proceed()

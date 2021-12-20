@@ -1,5 +1,6 @@
 import os
 import pathlib
+import tempfile
 import shutil
 import unittest.mock
 
@@ -30,7 +31,8 @@ interpreter = Interpreter(
 # reporting in subprocess
 interpreter.set_environment(COVERAGE_PROCESS_START=project_directory+'/tox.ini')
 advice = SubprocessAdvice(
-    interpreter=interpreter
+    interpreter=interpreter,
+    directory=tempfile.mkdtemp(),
 )
 configuration = Configuration()
 configuration.add_advice_chain(advice)
@@ -50,6 +52,11 @@ class TestSubprocessAdvice(unittest.TestCase):
         subprocess_pid = session.result.value
 
         self.assertNotEqual(subprocess_pid, os.getpid())
+
+    def test_temporary_session_data_is_deleted(self):
+        session = Session(Task.create_task(_get_pid), Execution('r'), configuration)
+        session.initiate()
+        self.assertEqual(0, len(list(advice.directory.iterdir())))
 
     def test_directory_for_data_exchange_can_be_configured(self):
         path = pathlib.Path('/my/directory')
