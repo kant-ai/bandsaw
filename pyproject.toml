@@ -40,3 +40,6 @@ docs = [
 release = [
     "flit",
 ]
+multimeter = [
+    "multimeter",
+]
