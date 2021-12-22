@@ -154,6 +154,67 @@ For an example, how transfer to a different python interpreter can be implemente
 look at the implementation of the 
 [SubprocessAdvice](https://gitlab.com/kantai/bandsaw/-/blob/mainline/bandsaw/advices/subprocess.py).
 
+#### Temporary directory
+Often advices need to create temporary files. To make sure, these temporary files are
+automatically cleaned up, once a session is finished, each session contains its own
+temporary directory in its [`temp_dir`](../api/#bandsaw.session.Session.temp_dir)
+property. All files and directories created in this directory are automatically
+deleted when no longer needed.
+
+#### Attachments
+The session allows advices to store additional data with the result by using its
+[`attachments`](../api/#bandsaw.session.Session.restore) property, which contains an
+object of type ['Attachments'](../api/#bandsaw.session.Attachments). Adding a new file
+as an attachment is done by assigning a file path to a new item whose name is the name
+of the attachment:
+
+```python
+>>> session.attachments['my.attachment'] = '/path/to/file'
+```
+
+Attachments can only be added, but neither deleted nor overwritten. Their names must
+be valid file names without directories. Adding a new attachment raises different
+exceptions in case of an error:
+
+  - `KeyError` if an attachment with the same name already exists.
+  - `TypeError`if the value that is assigned is neither a `str` or a `pathlib.Path`.
+  - `ValueError` if the assigned file path does not exist or isn't a file.
+
+Once an attachment has been assigned, it can be accessed like a normal item in a dict
+by its name as a key, but instead of a file path, an instance of type
+[`Attachment`](../api/#bandsaw.session.Attachment) is returned. This type allows only
+read access to the data using its [`open()`](../api/#bandsaw.session.Attachment.open)
+method:
+
+```python
+attachment = session.attachments['my.attachment']
+print(attachment.size)
+with attachment.open() as stream:
+    binary_data = stream.readall()
+```
+
+Since `Attachments` implements `abc.Mapping` one can iterate over all attachments and
+test for the existence of a particular attachment using the `in` notation:
+
+```python
+for name, attachment in session.attachments.items():
+    print(name)
+    with attachment.open() as stream:
+        ...
+```
+
+```python
+if 'my.attachment' in session.attachments:
+    ...
+```
+
+If a session is serialized, its attachments are automatically included. This requires
+that the attached files still exist at the time of the serialization. Since
+serialization of the session is often done by other advices than the ones that created
+the attachments, advices shouldn't remove files that they have added as an attachment.
+To make sure that these files are eventually cleaned up, they should be located within
+the session's temporary directory.
+
 ### Configuration
 
 Bandsaw needs configuration to know which advices to apply to the individual tasks. This
