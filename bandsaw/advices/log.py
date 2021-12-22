@@ -79,6 +79,15 @@ class LoggingAdvice(Advice):
     """An Advice which adds additional logging"""
 
     def __init__(self, level=None, formatter=None):
+        """
+        Create a new instance of the `LoggingAdvice`.
+
+        Args:
+            level (int): The log level of the messages to keep. If `None` the level is
+                defined by the root logger. Defaults to `None`.
+            formatter (logging.Formatter): Formatter to use for writing out the
+                individual log messages. Defaults to `JsonFormatter`.
+        """
         self._level = level
         if formatter is None:
             formatter = JsonFormatter()

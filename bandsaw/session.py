@@ -28,7 +28,7 @@ class Attachment(abc.ABC):
         Opens the attachment for reading.
 
         Returns:
-            binary stream for reading.
+            io.RawIOBase: binary stream for reading.
         """
 
     @property

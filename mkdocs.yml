@@ -9,6 +9,7 @@ nav:
   - User guide: user_guide.md
   - Advices:
     - Caching: advices/caching.md
+    - Loggging: advices/logging.md
     - Subprocess: advices/subprocess.md
     - Remote: advices/remote.md
     - Profiling: advices/profiling.md
