@@ -12,7 +12,7 @@ nav:
     - Loggging: advices/logging.md
     - Subprocess: advices/subprocess.md
     - Remote: advices/remote.md
-    - Profiling: advices/profiling.md
+    - Metrics: advices/metrics.md
     - Async: advices/async.md
   - FAQ: faq.md
   - Changelog: changelog.md

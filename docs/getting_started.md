@@ -71,10 +71,10 @@ just by adding them to its configuration:
     [`bandsaw.advices.subprocess.SubprocessAdvice`](../advices/subprocess/)
 - Caching the result of a task:
     [`bandsaw.advices.cache.CachingAdvice`](../advices/caching/)
-- Running tasks on a different machine using SSH (Coming soon):
+- Running tasks on a different machine using SSH:
     [`bandsaw.advices.remote.SshAdvice`](../advices/remote/)
-- Capturing the resource usage of a task (Coming soon):
-    [`bandsaw.advices.profile.ProfilingAdvice`](../advices/profiling/)
+- Capturing the resource usage of a task:
+    [`bandsaw.advices.metrics.MetricsAdvice`](../advices/metrics/)
 - Running tasks on asynchronously (Coming soon):
     [`bandsaw.advices.async.AsyncAdvice`](../advices/async/)
 - Creating your own advice:
