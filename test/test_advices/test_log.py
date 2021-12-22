@@ -36,12 +36,12 @@ class TestJsonFormatter(unittest.TestCase):
             'name', 'level', '/my/path', 666,
                  'My log message', [], None)
         record.message = record.msg
-        record.created = datetime.datetime(2021, 1, 1, 1, 1, 1, 123456).timestamp()
+        record.created = datetime.datetime(2021, 1, 1, 1, 1, 1, 123456, tzinfo=datetime.timezone.utc).timestamp()
 
         log_line = self.formatter.format(record)
 
         log_item = json.loads(log_line)
-        self.assertEqual("2021-01-01T00:01:01.123456+00:00", log_item['timestamp'])
+        self.assertEqual("2021-01-01T01:01:01.123456+00:00", log_item['timestamp'])
 
     def test_newlines_in_messages_are_escpaed(self):
         record = logging.LogRecord(
@@ -73,10 +73,12 @@ class TestJsonFormatter(unittest.TestCase):
             'ValueError: My value error',
             log_item['exception'],
         )
-        self.assertEqual(
-            'File "/home/christoph/projects/bandsaw/test/test_advices/test_log.py",'
-            ' line 65, in test_exception_info_is_added_if_set\n'
-            '    raise ValueError("My value error")',
+        self.assertIn(
+            'bandsaw/test/test_advices/test_log.py',
+            log_item['traceback'],
+        )
+        self.assertIn(
+            'raise ValueError("My value error")',
             log_item['traceback'],
         )
 
