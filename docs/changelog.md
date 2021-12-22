@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3: Metrics and logging
+
+  - Add new `MetricsAdvice` that gathers metrics when executing tasks
+  - Support for file attachments on a session
+  - LoggingAdvice adds per-session log file as attachment
+  - JsonFormatter for storing log items in a structured format
+  - new session id to uniquely identify sessions
+  - Fix: Specifying advice chain in @task decorator was broken
+
 ## 0.2: Remote execution of tasks
 
   - Distribute task executions to remote machines via SSH
