@@ -220,10 +220,10 @@ class TestSession(unittest.TestCase):
             def on_init(self, configuration):
                 self.init_called = True
 
-            def on_before_advice(self, task, execution, context):
+            def on_session_created(self, session):
                 self.before_called = True
 
-            def on_after_advice(self, task, execution, context, result):
+            def on_session_finished(self, session):
                 self.after_called = True
 
         extension = MyExtension()

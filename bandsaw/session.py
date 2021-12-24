@@ -205,7 +205,7 @@ class Session:
 
         logger.debug("running extensions before advice")
         for extension in self._configuration.extensions:
-            extension.on_before_advice(self.task, self.execution, self.context)
+            extension.on_session_created(self)
 
         self.proceed()
 
@@ -217,9 +217,8 @@ class Session:
 
         logger.debug("running extensions after advice")
         for extension in self._configuration.extensions:
-            extension.on_after_advice(
-                self.task, self.execution, self.context, self.result
-            )
+            extension.on_session_finished(self)
+
         return self.result
 
     @property

@@ -21,27 +21,23 @@ class Extension:
                 which contains the config that has been loaded.
         """
 
-    def on_before_advice(self, task, execution, context):
+    def on_session_created(self, session):
         """
         Called before bandsaw advises a task.
 
-        Args:
-            task (bandsaw.tasks.Task): The task which will be advised.
-            execution (bandsaw.execution.Execution): The execution which contains the
-                parametrization of the task.
-            context (bandsaw.context.Context): The context which will be used during
-                the advice. The context can be extended by the extension.
-        """
-
-    def on_after_advice(self, task, execution, context, result):
-        """
-        Called after bandsaw advises a task.
+        This is called before any advice is applied.
 
         Args:
-            task (bandsaw.tasks.Task): The task which was advised.
-            execution (bandsaw.execution.Execution): The execution which contains the
-                parametrization of the task.
-            context (bandsaw.context.Context): The context which was used during the
-                advice.
-            result (bandsaw.result.Result): The result of the call.
+            session (bandsaw.session.Session): The new session.
+        """
+
+    def on_session_finished(self, session):
+        """
+        Called after bandsaw advised a task.
+
+        This is called after all advices have been applied and the final result is
+        available.
+
+        Args:
+            session (bandsaw.session.Session): The session.
         """
