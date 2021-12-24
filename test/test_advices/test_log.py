@@ -33,8 +33,8 @@ class TestJsonFormatter(unittest.TestCase):
 
     def test_timestamp_uses_isoformat_with_utc(self):
         record = logging.LogRecord(
-            'name', 'level', '/my/path', 666,
-                 'My log message', [], None)
+            'name', logging.INFO, '/my/path', 666, 'My log message', {}, None,
+        )
         record.message = record.msg
         record.created = datetime.datetime(2021, 1, 1, 1, 1, 1, 123456, tzinfo=datetime.timezone.utc).timestamp()
 
@@ -45,8 +45,8 @@ class TestJsonFormatter(unittest.TestCase):
 
     def test_newlines_in_messages_are_escpaed(self):
         record = logging.LogRecord(
-            'name', 'level', '/my/path', 666,
-                 'My log message with \n newline', [], None)
+            'name', logging.INFO, '/my/path', 666, 'My log message with \n newline', {}, None,
+        )
         record.message = record.msg
 
         log_line = self.formatter.format(record)
@@ -57,8 +57,8 @@ class TestJsonFormatter(unittest.TestCase):
 
     def test_exception_info_is_added_if_set(self):
         record = logging.LogRecord(
-            'name', 'level', '/my/path', 666,
-                 'My log message', [], None)
+            'name', logging.INFO, '/my/path', 666, 'My log message', {}, None,
+        )
         record.message = record.msg
 
         try:
@@ -85,8 +85,8 @@ class TestJsonFormatter(unittest.TestCase):
     def test_ids_are_added_if_session_is_set(self):
 
         record = logging.LogRecord(
-            'name', 'level', '/my/path', 666,
-                 'My log message', [], None)
+            'name', logging.INFO, '/my/path', 666, 'My log message', {}, None,
+        )
         record.message = record.msg
         record.session = _create_session()
 
