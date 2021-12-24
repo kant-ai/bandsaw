@@ -14,8 +14,8 @@ class Task(SerializableValue, abc.ABC):
 
     Attributes:
         task_id (str): A unique identifier for the individual tasks.
-        kwargs (dict): A dictionary with additional arguments provided at task
-            definition.
+        advice_parameters (dict): A dictionary with additional arguments provided at
+            task definition.
         source (str): The python source code as string which defines the task.
         bytecode (bytes): The compiled byte code of the task definition.
     """
@@ -23,14 +23,14 @@ class Task(SerializableValue, abc.ABC):
     # For different types of callable
     # https://stackoverflow.com/questions/19314405/how-to-detect-is-decorator-has-been-applied-to-method-or-function
 
-    def __init__(self, task_id, task_kwargs):
+    def __init__(self, task_id, advice_parameters):
         self.task_id = task_id
-        self._task_kwargs = task_kwargs
+        self._advice_parameters = advice_parameters
 
     @property
-    def kwargs(self):
-        """Additional arguments defined at task definition."""
-        return dict(self._task_kwargs)
+    def advice_parameters(self):
+        """Additional parameters for advices defined at task definition."""
+        return dict(self._advice_parameters)
 
     @property
     @abc.abstractmethod
@@ -78,13 +78,14 @@ class Task(SerializableValue, abc.ABC):
         return result
 
     @classmethod
-    def create_task(cls, obj, task_kwargs=None):
+    def create_task(cls, obj, advice_parameters=None):
         """
         Factory for creating a task for different Python objects.
 
         Args:
             obj (Any): Python object that should be run as a task.
-            task_kwargs (dict): A dictionary containing additional task arguments.
+            advice_parameters (dict): A dictionary containing additional arguments to
+                be used by the advices.
 
         Returns:
             bandsaw.tasks.Task: Instance of `Task` class that allows to execute the
@@ -93,13 +94,13 @@ class Task(SerializableValue, abc.ABC):
         Raises:
             TypeError: If there is no support for this type of python object.
         """
-        if task_kwargs is None:
-            task_kwargs = {}
+        if advice_parameters is None:
+            advice_parameters = {}
         if isinstance(obj, types.FunctionType):
             if '.<locals>.' in obj.__qualname__:
-                return _FunctionWithClosureTask(obj, task_kwargs)
+                return _FunctionWithClosureTask(obj, advice_parameters)
             function_name, module_name = object_as_import(obj)
-            return _FunctionTask(function_name, module_name, task_kwargs)
+            return _FunctionTask(function_name, module_name, advice_parameters)
         raise TypeError(f"Unsupported task object of type {type(obj)}")
 
 
@@ -108,12 +109,12 @@ class _FunctionTask(Task):
     Task class that supports free functions.
     """
 
-    def __init__(self, function_name, module_name, task_kwargs):
+    def __init__(self, function_name, module_name, advice_parameters):
         self.function_name = function_name
         self.module_name = module_name
         value = (self.function_name, self.module_name)
         task_id = identifier_from_string(repr(value))
-        super().__init__(task_id, task_kwargs)
+        super().__init__(task_id, advice_parameters)
 
     @property
     def function(self):
@@ -143,13 +144,13 @@ class _FunctionTask(Task):
         return {
             'module_name': self.module_name,
             'function_name': self.function_name,
-            'task_kwargs': self.kwargs,
+            'advice_parameters': self.advice_parameters,
         }
 
     @classmethod
     def deserialize(cls, values):
         return _FunctionTask(
-            values['function_name'], values['module_name'], values['task_kwargs']
+            values['function_name'], values['module_name'], values['advice_parameters']
         )
 
 
@@ -158,9 +159,9 @@ class _FunctionWithClosureTask(Task):
     Task that can execute locally defined functions.
     """
 
-    def __init__(self, function, task_kwargs):
+    def __init__(self, function, advice_parameters):
         self.function = function
-        super().__init__(identifier_from_bytes(self.bytecode), task_kwargs)
+        super().__init__(identifier_from_bytes(self.bytecode), advice_parameters)
 
     @property
     def source(self):

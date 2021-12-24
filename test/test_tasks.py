@@ -38,7 +38,7 @@ class TestTask(unittest.TestCase):
     def test_create_task_sets_task_kwargs(self):
         task = Task.create_task(free_function, {'my': 'kwargs'})
 
-        self.assertEqual(task.kwargs, {'my': 'kwargs'})
+        self.assertEqual(task.advice_parameters, {'my': 'kwargs'})
 
     def test_free_function_tasks_can_be_serialized(self):
         task = Task.create_task(free_function)

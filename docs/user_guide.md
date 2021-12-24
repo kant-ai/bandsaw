@@ -44,8 +44,8 @@ def my_function(x):
 Each task has a unique `task_id` that is derived from the code that is executed. This can
 be used to differentiate between different tasks.
 
-Task can be given additional keyword arguments, that influence how they are executed.
-These keyword arguments can be given as keyword arguments to the decorator:
+Task can be given additional advice parameters, that influence how they are executed.
+These advice parameters can be given as keyword arguments to the decorator:
 
 ```python
 @bandsaw.task(my='argument')

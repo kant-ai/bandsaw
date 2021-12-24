@@ -22,7 +22,7 @@ class TestMetricsAdvice(unittest.TestCase):
     def setUp(self):
         self.mm = multimeter.Multimeter(cycle_time=0.01)
         self.advice = MetricsAdvice(self.mm)
-        task = Task.create_task(task_function, task_kwargs={
+        task = Task.create_task(task_function, advice_parameters={
             'metrics': {'tags': {'my': 'tag'}},
         })
         task.task_id = 't'

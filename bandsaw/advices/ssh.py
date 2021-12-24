@@ -274,7 +274,8 @@ class SshAdvice(Advice):
         with io.FileIO(str(session_in_path), mode='w') as stream:
             session.save(stream)
 
-        remote_name = session.task.kwargs.get('ssh', {}).get('remote', 'default')
+        parameters = session.task.advice_parameters
+        remote_name = parameters.get('ssh', {}).get('remote', 'default')
         remote = self.remotes[remote_name]
 
         remote_run_directory = remote.directory / session.execution.execution_id

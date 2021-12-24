@@ -44,7 +44,8 @@ class MetricsAdvice(Advice):
             'execution_id': session.execution.execution_id,
             'session_id': session.session_id,
         }
-        additional_tags = session.task.kwargs.get('metrics', {}).get('tags', {})
+        advice_parameters = session.task.advice_parameters
+        additional_tags = advice_parameters.get('metrics', {}).get('tags', {})
         tags.update(additional_tags)
 
         logger.info("Measurement id %s with tags %s", session.session_id, tags)
