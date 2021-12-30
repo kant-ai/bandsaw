@@ -9,7 +9,6 @@ import zipfile
 
 from .config import get_configuration
 from .distribution import get_distribution_archive
-from .identifier import identifier_from_string
 from .run import get_run_id
 from .serialization import SerializableValue
 
@@ -139,6 +138,47 @@ class Attachments(collections.abc.Mapping):
         return len(self._items)
 
 
+class Ids:
+    """
+    Class that encapsulates the ids of a session.
+    """
+
+    slots = ('task_id', 'execution_id', 'run_id', 'session_id')
+
+    def __init__(self, task_id, execution_id, run_id):
+        self.task_id = task_id
+        self.execution_id = execution_id
+        self.run_id = run_id
+        self._session_id = "_".join(
+            [self.task_id, self.execution_id, self.run_id],
+        )
+
+    def __str__(self):
+        return self._session_id
+
+    def as_path(self):
+        """
+        Returns a relative path derived from the ids.
+
+        Returns:
+            pathlib.Path: relative path that uses the individual ids as components.
+        """
+        return pathlib.Path(self.task_id) / self.execution_id / self.run_id
+
+    @classmethod
+    def from_string(cls, id_as_string):
+        """Create new Ids object from its string representation."""
+        return Ids(*(id_as_string.split('_')))
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return self._session_id == other._session_id
+
+    def __hash__(self):
+        return hash(self._session_id)
+
+
 class Session:
     """
     Class that handles the advising of an execution.
@@ -160,7 +200,7 @@ class Session:
             Otherwise, `None`.
         attachments (bandsaw.session.Attachments): A mapping of files that have been
             attached to the session.
-        _configuration (bandsaw.config.Configuration): The configuration that is being
+        configuration (bandsaw.config.Configuration): The configuration that is being
             used for advising this task.
     """
 
@@ -177,17 +217,16 @@ class Session:
         """
         Create a new session.
 
-
         """
         self.task = task
         self.execution = execution
         self.context = {}
         self.result = None
         self.attachments = Attachments()
-        self._configuration = configuration
+        self.configuration = configuration
         self._advice_chain = advice_chain
         self._moderator = None
-        self._session_id = None
+        self._ids = None
         self._temp_dir = None
 
     def initiate(self):
@@ -200,11 +239,11 @@ class Session:
         """
 
         self._moderator = _Moderator(
-            self._configuration.get_advice_chain(self._advice_chain)
+            self.configuration.get_advice_chain(self._advice_chain)
         )
 
         logger.debug("running extensions before advice")
-        for extension in self._configuration.extensions:
+        for extension in self.configuration.extensions:
             extension.on_session_created(self)
 
         self.proceed()
@@ -216,33 +255,38 @@ class Session:
             )
 
         logger.debug("running extensions after advice")
-        for extension in self._configuration.extensions:
+        for extension in self.configuration.extensions:
             extension.on_session_finished(self)
 
         return self.result
 
     @property
-    def session_id(self):
-        """The id of this session."""
-        if self._session_id is None:
+    def ids(self):
+        """The ids of this session."""
+        if self._ids is None:
             if self.task is None or self.execution is None:
                 raise ValueError("Incomplete session, missing task or execution.")
-            self._session_id = identifier_from_string(
-                ":".join(
-                    [self.run_id, self.task.task_id, self.execution.execution_id],
-                )
+            self._ids = Ids(
+                self.task.task_id,
+                self.execution.execution_id,
+                self.run_id,
             )
-        return self._session_id
+        return self._ids
+
+    @property
+    def session_id(self):
+        """The id of this session as string."""
+        return str(self.ids)
 
     @property
     def serializer(self):
         """The serializer that can be used for serializing values."""
-        return self._configuration.serializer
+        return self.configuration.serializer
 
     @property
     def distribution_archive(self):
         """The DistributionArchive which can be used when transferring the session."""
-        return get_distribution_archive(self._configuration)
+        return get_distribution_archive(self.configuration)
 
     @property
     def run_id(self):
@@ -264,8 +308,8 @@ class Session:
             pathlib.Path: Path to the temporary directory.
         """
         if self._temp_dir is None:
-            self._temp_dir = self._configuration.temporary_directory / self.session_id
-            self._temp_dir.mkdir(exist_ok=True)
+            self._temp_dir = self.configuration.temporary_directory / self.ids.as_path()
+            self._temp_dir.mkdir(parents=True, exist_ok=True)
         return self._temp_dir
 
     def proceed(self):
@@ -316,11 +360,11 @@ class Session:
         archive = zipfile.ZipFile(stream, 'r')  # pylint: disable=consider-using-with
 
         session_json = json.loads(archive.read('session.json'))
-        self._configuration = get_configuration(session_json['configuration'])
+        self.configuration = get_configuration(session_json['configuration'])
         self._advice_chain = session_json['advice_chain']
-        self._session_id = session_json['session_id']
+        self._ids = Ids.from_string(session_json['ids'])
 
-        serializer = self._configuration.serializer
+        serializer = self.configuration.serializer
 
         stream = io.BytesIO(archive.read('task.dat'))
         self.task = serializer.deserialize(stream)
@@ -337,21 +381,21 @@ class Session:
         stream = io.BytesIO(archive.read('moderator.dat'))
         self._moderator = serializer.deserialize(stream)
         if self._moderator is not None:
-            self._moderator.advice_chain = self._configuration.get_advice_chain(
+            self._moderator.advice_chain = self.configuration.get_advice_chain(
                 self._advice_chain
             )
 
         self.attachments = Attachments(archive)
 
     def _store_as_zip(self, stream):
-        serializer = self._configuration.serializer
+        serializer = self.configuration.serializer
 
         with zipfile.ZipFile(stream, 'w') as archive:
             session_json = json.dumps(
                 {
-                    'configuration': self._configuration.module_name,
+                    'configuration': self.configuration.module_name,
                     'advice_chain': self._advice_chain,
-                    'session_id': self.session_id,
+                    'ids': str(self.ids),
                 }
             )
             archive.writestr('session.json', session_json)

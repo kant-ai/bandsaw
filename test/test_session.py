@@ -11,7 +11,7 @@ from bandsaw.advice import Advice
 from bandsaw.config import Configuration
 from bandsaw.extensions import Extension
 from bandsaw.execution import Execution
-from bandsaw.session import Attachment, Attachments, Session, _Moderator
+from bandsaw.session import Attachment, Attachments, Session, Ids, _Moderator
 
 
 class TestAttachments(unittest.TestCase):
@@ -90,6 +90,43 @@ class TestAttachments(unittest.TestCase):
         zip_file = zipfile.ZipFile(pathlib.Path(__file__).parent / 'attachments.zip')
         attachments = Attachments(zip_file)
         self.assertEqual(20, attachments['test.txt'].size)
+
+
+class TestIds(unittest.TestCase):
+
+    def test_str_session_id(self):
+        ids = Ids('t', 'e', 'r')
+        self.assertEqual('t_e_r', str(ids))
+
+    def test_from_string(self):
+        ids = Ids.from_string('t_e_r')
+        self.assertEqual('t', ids.task_id)
+        self.assertEqual('e', ids.execution_id)
+        self.assertEqual('r', ids.run_id)
+
+    def test_ids_as_path_contains_individual_ids(self):
+        path = Ids.from_string('t_e_r').as_path()
+        self.assertEqual(pathlib.Path('t/e/r'), path)
+
+    def test_ids_are_equal_when_created_from_same_string(self):
+        ids1 = Ids.from_string('t_e_r')
+        ids2 = Ids.from_string('t_e_r')
+        self.assertEqual(ids1, ids2)
+
+    def test_ids_have_same_hash_when_created_from_the_same_string(self):
+        ids1 = Ids.from_string('t_e_r')
+        ids2 = Ids.from_string('t_e_r')
+        self.assertEqual(hash(ids1), hash(ids2))
+
+    def test_ids_are_not_equal_when_different_strings(self):
+        ids1 = Ids.from_string('t_e_r')
+        ids2 = Ids.from_string('a_b_c')
+        self.assertNotEqual(ids1, ids2)
+
+    def test_ids_is_not_equal_to_strings(self):
+        ids = Ids.from_string('t_e_r')
+        string = 't_e_r'
+        self.assertNotEqual(ids, string)
 
 
 class MyTask:
@@ -275,8 +312,8 @@ class TestSession(unittest.TestCase):
             restored_session = Session().restore(stream)
 
             self.assertEqual(
-                session._configuration.module_name,
-                restored_session._configuration.module_name,
+                session.configuration.module_name,
+                restored_session.configuration.module_name,
             )
             self.assertEqual(session._advice_chain, restored_session._advice_chain)
             self.assertEqual(session.context, restored_session.context)
