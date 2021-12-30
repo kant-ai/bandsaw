@@ -42,6 +42,11 @@ class Task(SerializableValue, abc.ABC):
     def bytecode(self):
         """The compiled byte code of the task definition as `bytes`."""
 
+    @property
+    @abc.abstractmethod
+    def signature(self):
+        """The signature() of the callable representing this task."""
+
     @abc.abstractmethod
     def _execute(self, args, kwargs):
         """
@@ -137,6 +142,10 @@ class _FunctionTask(Task):
     def bytecode(self):
         return self.function.__code__.co_code
 
+    @property
+    def signature(self):
+        return inspect.signature(self.function)
+
     def _execute(self, args, kwargs):
         return self.function(*args, **kwargs)
 
@@ -152,6 +161,9 @@ class _FunctionTask(Task):
         return _FunctionTask(
             values['function_name'], values['module_name'], values['advice_parameters']
         )
+
+    def __str__(self):
+        return self.module_name + '.' + self.function_name
 
 
 class _FunctionWithClosureTask(Task):
@@ -171,8 +183,15 @@ class _FunctionWithClosureTask(Task):
     def bytecode(self):
         return self.function.__code__.co_code
 
+    @property
+    def signature(self):
+        return inspect.signature(self.function)
+
     def _execute(self, args, kwargs):
         return self.function(*args, **kwargs)
+
+    def __str__(self):
+        return self.function.__qualname__
 
     def serialized(self):
         raise NotImplementedError

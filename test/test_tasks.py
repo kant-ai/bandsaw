@@ -8,6 +8,10 @@ def free_function():
     return 'free-function'
 
 
+def function_with_arguments(arg1, arg2, kwarg1=None, kwarg2=None):
+    pass
+
+
 def wrapper(func):
     @functools.wraps(func)
     def always_false(*args, **kwargs):
@@ -35,6 +39,19 @@ class TestTask(unittest.TestCase):
         bytecode = task.bytecode
         self.assertEqual(bytecode, b'd\x01S\x00')
 
+    def test_task_signature_from_free_function(self):
+        task = Task.create_task(function_with_arguments)
+
+        self.assertIn('arg1', task.signature.parameters)
+        self.assertIn('arg2', task.signature.parameters)
+        self.assertIn('kwarg1', task.signature.parameters)
+        self.assertIn('kwarg2', task.signature.parameters)
+
+    def test_task_string_representation(self):
+        task = Task.create_task(free_function)
+
+        self.assertEqual('test_tasks.free_function', str(task))
+
     def test_create_task_sets_task_kwargs(self):
         task = Task.create_task(free_function, {'my': 'kwargs'})
 
@@ -54,23 +71,27 @@ class TestTask(unittest.TestCase):
         self.assertTrue(result)
 
     def test_create_task_handles_local_function(self):
-        def local_function():
+        def local_function(arg):
             return 'local-function'
 
         task = Task.create_task(local_function)
         self.assertEqual('71b50995b93786bb8d57', task.task_id)
 
-        result = task._execute([], {})
+        result = task._execute(['a'], {})
         self.assertEqual('local-function', result)
 
         result = task.source
-        self.assertEqual(result, "        def local_function():\n            return 'local-function'\n")
+        self.assertEqual(result, "        def local_function(arg):\n            return 'local-function'\n")
+
+        self.assertEqual('TestTask.test_create_task_handles_local_function.<locals>.local_function', str(task))
 
         with self.assertRaises(NotImplementedError):
             task.serialized()
 
         with self.assertRaises(NotImplementedError):
             type(task).deserialize(None)
+
+        self.assertIn('arg', task.signature.parameters)
 
     def test_create_task_raises_for_unknown_task_type(self):
         class MyClass:
