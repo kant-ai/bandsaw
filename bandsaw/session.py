@@ -141,20 +141,27 @@ class Attachments(collections.abc.Mapping):
 class Ids:
     """
     Class that encapsulates the ids of a session.
+
+    Attributes:
+        task_id (str): The id of the task in this session.
+        execution_id (str): The id of the execution of the task in this session.
+        run_id (str): The id of the current run.
+        session_id (str): The id of the session. The id is a combination of the three
+            other ids.
     """
 
-    slots = ('task_id', 'execution_id', 'run_id', 'session_id')
+    slots = ('task_id', 'execution_id', 'run_id', '_session_id')
 
     def __init__(self, task_id, execution_id, run_id):
         self.task_id = task_id
         self.execution_id = execution_id
         self.run_id = run_id
-        self._session_id = "_".join(
+        self.session_id = "_".join(
             [self.task_id, self.execution_id, self.run_id],
         )
 
     def __str__(self):
-        return self._session_id
+        return self.session_id
 
     def as_path(self):
         """
@@ -173,10 +180,10 @@ class Ids:
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return False
-        return self._session_id == other._session_id
+        return self.session_id == other.session_id
 
     def __hash__(self):
-        return hash(self._session_id)
+        return hash(self.session_id)
 
 
 class Session:

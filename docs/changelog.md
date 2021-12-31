@@ -1,7 +1,9 @@
 # Changelog
 
-## 0.3: Metrics and logging
+## 0.3: Tracking, metrics and logging
 
+  - New `TrackerExtension` to keep track of workflow runs, executions
+    of tasks, their results and attached files.
   - Add new `MetricsAdvice` that gathers metrics when executing tasks
   - Support for file attachments on a session
   - LoggingAdvice adds per-session log file as attachment
