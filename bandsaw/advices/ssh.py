@@ -343,8 +343,8 @@ class SshAdvice(Advice):
         self._backend.delete_dir(remote, remote_run_directory)
 
         logger.info("Restore local session from %s", session_out_path)
-        with io.FileIO(str(session_out_path), mode='r') as stream:
-            session.restore(stream)
+        stream = io.FileIO(str(session_out_path), mode='r')
+        session.restore(stream)
 
         logger.info(
             "Cleaning up local sessions %s, %s",
