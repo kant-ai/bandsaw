@@ -151,6 +151,8 @@ class DistributionArchive:
 
     Attributes:
         path (pathlib.Path): The path to the file containing the code.
+        modules (tuple[str]): The names of the modules that are included in this
+            archive.
     """
 
     def __init__(self, path, *modules):
