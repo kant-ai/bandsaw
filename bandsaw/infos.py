@@ -29,7 +29,7 @@ def value_info(value):
     if hasattr(value, '__len__'):
         info['size'] = str(len(value))
 
-    if hasattr(value, 'info'):
-        info.update(value.info())
+    if hasattr(value, 'value_info') and callable(value.value_info):
+        info.update(value.value_info())
 
     return info

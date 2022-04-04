@@ -80,7 +80,7 @@ class TestValueInfo(unittest.TestCase):
             def __str__(self):
                 return 'MyStringRepr'
 
-            def info(self):
+            def value_info(self):
                 return {'my': 'custom', 'info': 'implementation'}
 
         info = value_info(MyClass())
