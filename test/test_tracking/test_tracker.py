@@ -140,6 +140,22 @@ class TestTrackerExtension(unittest.TestCase):
             {'index': 1, 'size': '4', 'type': 'str', 'value': 'dict'},
         ]}, result_info['result'])
 
+    def test_tracker_on_session_finished_tracks_result_with_tuple_value(self):
+        session = Session(Task.create_task(my_function), Execution('e', ['arg']), Configuration())
+        session.result = Result(value=('my', 'dict'))
+        self.tracker.on_session_finished(session)
+        self.backend_mock.track_result.assert_called()
+        ids, result_info = self.backend_mock.track_result.call_args[0]
+        self.assertEqual(session.ids, ids)
+        self.assertIsInstance(result_info, dict)
+        self.assertIn('task', result_info)
+        self.assertIn('execution', result_info)
+        self.assertIn('session', result_info)
+        self.assertEqual({'value': [
+            {'index': 0, 'size': '2', 'type': 'str', 'value': 'my'},
+            {'index': 1, 'size': '4', 'type': 'str', 'value': 'dict'},
+        ]}, result_info['result'])
+
     def test_tracker_on_session_finished_tracks_result_with_value_only_once(self):
         session = Session(Task.create_task(my_function), Execution('e', ['arg']), Configuration())
         session.result = Result(value='My return value')

@@ -176,6 +176,11 @@ class TrackerExtension(Extension):
                     info = value_info(value)
                     info['index'] = index
                     result_value_infos.append(info)
+            elif isinstance(result_value, tuple):
+                for index, value in enumerate(result_value):
+                    info = value_info(value)
+                    info['index'] = index
+                    result_value_infos.append(info)
             else:
                 info = value_info(result_value)
                 result_value_infos = info
