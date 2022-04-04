@@ -175,7 +175,7 @@ class TestLoggingAdvice(unittest.TestCase):
         self.assertIn(b'MY FORMAT: My log message', log_content)
 
     def test_logs_use_json_as_default_format(self):
-        logging.root.setLevel(logging.DEBUG)
+        logging.root.setLevel(logging.INFO)
         configuration = Configuration()
         task = Task.create_task(_task_function)
         task.task_id = 't'
@@ -194,11 +194,6 @@ class TestLoggingAdvice(unittest.TestCase):
         self.assertIsInstance(log_item1, dict)
         self.assertEqual('My log message', log_item1['message'])
         self.assertEqual('INFO', log_item1['level'])
-
-        log_item2 = json.loads(lines[2])
-        self.assertIsInstance(log_item2, dict)
-        self.assertEqual('My debug message', log_item2['message'])
-        self.assertEqual('DEBUG', log_item2['level'])
 
     def test_json_log_contains_ids(self):
         logging.root.setLevel(logging.DEBUG)

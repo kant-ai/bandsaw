@@ -252,7 +252,9 @@ class TestSession(unittest.TestCase):
             def __init__(self):
                 self.init_called = False
                 self.before_called = False
+                self.before_task_called = False
                 self.after_called = False
+                self.after_task_called = False
 
             def on_init(self, configuration):
                 self.init_called = True
@@ -263,11 +265,19 @@ class TestSession(unittest.TestCase):
             def on_session_finished(self, session):
                 self.after_called = True
 
+            def on_before_task_executed(self, session):
+                self.before_task_called = True
+
+            def on_after_task_executed(self, session):
+                self.after_task_called = True
+
         extension = MyExtension()
         self.config.add_extension(extension)
         session = Session(MyTask(), Execution('1'), self.config)
         session.initiate()
         self.assertTrue(extension.before_called)
+        self.assertTrue(extension.before_task_called)
+        self.assertTrue(extension.after_task_called)
         self.assertTrue(extension.after_called)
 
     def test_no_proceeding_advice_raises_an_error(self):

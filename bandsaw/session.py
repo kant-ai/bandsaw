@@ -1,6 +1,6 @@
 """Contains classes for representing an advising session"""
 import abc
-import collections
+import collections.abc
 import io
 import json
 import logging
@@ -246,12 +246,10 @@ class Session:
         """
 
         self._moderator = _Moderator(
-            self.configuration.get_advice_chain(self._advice_chain)
+            self.configuration.get_advice_chain(self._advice_chain),
         )
 
-        logger.debug("running extensions before advice")
-        for extension in self.configuration.extensions:
-            extension.on_session_created(self)
+        self._trigger_on_session_created()
 
         self.proceed()
 
@@ -261,9 +259,7 @@ class Session:
                 f"Misbehaving advice {self._moderator.current_advice}"
             )
 
-        logger.debug("running extensions after advice")
-        for extension in self.configuration.extensions:
-            extension.on_session_finished(self)
+        self._trigger_on_session_finished()
 
         return self.result
 
@@ -429,6 +425,26 @@ class Session:
 
             self.attachments.store(archive)
 
+    def _trigger_on_session_created(self):
+        logger.debug("running extensions before advice")
+        for extension in self.configuration.extensions:
+            extension.on_session_created(self)
+
+    def _trigger_on_session_finished(self):
+        logger.debug("running extensions after advice")
+        for extension in self.configuration.extensions:
+            extension.on_session_finished(self)
+
+    def _trigger_on_before_task_executed(self):
+        logger.debug("running extensions before task execution")
+        for extension in self.configuration.extensions:
+            extension.on_before_task_executed(self)
+
+    def _trigger_on_after_task_executed(self):
+        logger.debug("running extensions after task execution")
+        for extension in self.configuration.extensions:
+            extension.on_after_task_executed(self)
+
 
 class _Moderator(SerializableValue):
     """
@@ -470,7 +486,9 @@ class _Moderator(SerializableValue):
             advice.before(session)
 
         elif not self.task_called:
+            session._trigger_on_before_task_executed()  # pylint: disable=W0212
             result = session.task.execute(session.execution)
+            session._trigger_on_after_task_executed()  # pylint: disable=W0212
             self.task_called = True
             session.conclude(result)
 

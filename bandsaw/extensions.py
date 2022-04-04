@@ -41,3 +41,25 @@ class Extension:
         Args:
             session (bandsaw.session.Session): The session.
         """
+
+    def on_before_task_executed(self, session):
+        """
+        Called bandsaw executes the task of a session.
+
+        This is called after the `before()` advices are applied, but before the
+        actual task is executed.
+
+        Args:
+            session (bandsaw.session.Session): The new session.
+        """
+
+    def on_after_task_executed(self, session):
+        """
+        Called after bandsaw has executed the task of a session.
+
+        This is called after a task was executed, but before all `after()` advices
+        are applied.
+
+        Args:
+            session (bandsaw.session.Session): The session.
+        """
