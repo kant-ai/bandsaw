@@ -55,6 +55,35 @@ Methods that change the state of session in relation to its execution, like
 `initiate()`, `proceed()` or `conclude()` must not be called by an extension.
 
 
+### on_before_task_executed()
+
+```python
+
+def on_before_task_executed(self, session):
+    ...
+```
+
+[`on_before_task_executed()`](../../api/#bandsaw.extensions.Extension.on_before_task_executed) is
+called when bandsaw has applied the `before()` advices and is about to execute the task
+a session. The session is given to the extension and should not be modified.
+Methods  that change the state of session in relation to its execution, like
+`initiate()`, `proceed()` or `conclude()` must not be called by an extension.
+
+### on_after_task_executed()
+
+```python
+def on_after_task_executed(self, session):
+    ...
+```
+
+[`on_after_task_executed()`](../../api/#bandsaw.extensions.Extension.on_after_task_executed)
+is called when bandsaw has finished executing a task, but still needs to apply the
+`after()` advices. The session is given to the extension and should not be modified.
+The result of the execution is not available at this time.
+Methods that change the state of session in relation to its execution, like
+`initiate()`, `proceed()` or `conclude()` must not be called by an extension.
+
+
 ## Configuration
 
 All extensions have to be added to the bandsaw configuration in order to be used.
