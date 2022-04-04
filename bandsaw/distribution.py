@@ -28,7 +28,8 @@ def _add_module_to_archive(module, archive):
         package_dir = pathlib.Path(module.__file__).parent
         root_dir = package_dir.parent
         directories_to_package = [package_dir]
-        for directory in directories_to_package:
+        while directories_to_package:
+            directory = directories_to_package.pop()
             for path in directory.iterdir():
                 if path.is_dir():
                     if path.name != '__pycache__':
