@@ -107,7 +107,21 @@ class TestTrackerExtension(unittest.TestCase):
         self.assertIn('task', result_info)
         self.assertIn('execution', result_info)
         self.assertIn('session', result_info)
+        self.assertIn('context', result_info)
         self.assertEqual({'value': {'size': '15', 'type': 'str', 'value': 'My return value'}}, result_info['result'])
+
+    def test_tracker_on_session_finished_info_contains_context(self):
+        session = Session(Task.create_task(my_function), Execution('e', ['arg']), Configuration())
+        session.context['my-context'] = 'value'
+        session.context['parent']['child'] = 1
+        session.result = Result(value='My return value')
+        self.tracker.on_session_finished(session)
+        self.backend_mock.track_result.assert_called()
+        ids, result_info = self.backend_mock.track_result.call_args[0]
+        self.assertEqual(session.ids, ids)
+        self.assertIsInstance(result_info, dict)
+        self.assertIn('context', result_info)
+        self.assertEqual({'my-context': 'value', 'parent': {'child': 1}}, result_info['context'])
 
     def test_tracker_on_session_finished_tracks_result_with_dict_value(self):
         session = Session(Task.create_task(my_function), Execution('e', ['arg']), Configuration())
@@ -120,6 +134,7 @@ class TestTrackerExtension(unittest.TestCase):
         self.assertIn('task', result_info)
         self.assertIn('execution', result_info)
         self.assertIn('session', result_info)
+        self.assertIn('context', result_info)
         self.assertEqual({'value': [
             {'key': 'my', 'size': '5', 'type': 'str', 'value': 'value'},
         ]}, result_info['result'])
@@ -135,6 +150,7 @@ class TestTrackerExtension(unittest.TestCase):
         self.assertIn('task', result_info)
         self.assertIn('execution', result_info)
         self.assertIn('session', result_info)
+        self.assertIn('context', result_info)
         self.assertEqual({'value': [
             {'index': 0, 'size': '2', 'type': 'str', 'value': 'my'},
             {'index': 1, 'size': '4', 'type': 'str', 'value': 'dict'},
@@ -151,6 +167,7 @@ class TestTrackerExtension(unittest.TestCase):
         self.assertIn('task', result_info)
         self.assertIn('execution', result_info)
         self.assertIn('session', result_info)
+        self.assertIn('context', result_info)
         self.assertEqual({'value': [
             {'index': 0, 'size': '2', 'type': 'str', 'value': 'my'},
             {'index': 1, 'size': '4', 'type': 'str', 'value': 'dict'},

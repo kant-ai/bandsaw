@@ -1,4 +1,4 @@
-"""Contains Advice that tracks task executions in a local file system."""
+"""Tracking task executions extension."""
 import logging
 
 from bandsaw.extensions import Extension
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class TrackerExtension(Extension):
     """
-    Advice that tracks task executions and their data in the file system.
+    Extension that tracks task executions and their data in a configurable backend.
 
     Attributes:
         _backend (bandsaw.tracking.backend.Backend): The backend implementation to use.
@@ -146,11 +146,7 @@ class TrackerExtension(Extension):
                 'session': {
                     'id': str(session.session_id),
                 },
-                'task': {
-                    'id': session.task.task_id,
-                    'definition': str(session.task),
-                    'advice_parameters': session.task.advice_parameters,
-                },
+                'context': session.context.value_info(),
             }
         )
         return tracking_info
