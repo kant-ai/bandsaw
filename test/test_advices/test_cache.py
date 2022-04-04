@@ -5,6 +5,7 @@ import unittest
 
 from bandsaw.advices.cache import CachingAdvice
 from bandsaw.config import Configuration
+from bandsaw.result import Result
 from bandsaw.serialization.json import JsonSerializer
 from bandsaw.session import Session
 from bandsaw.tasks import Task
@@ -18,13 +19,13 @@ def task_function():
 class TestCachingAdvice(unittest.TestCase):
 
     def setUp(self):
-        configuration = Configuration()
-        configuration.set_serializer(JsonSerializer())
+        self.configuration = Configuration()
+        self.configuration.set_serializer(JsonSerializer())
         self.cache_dir = pathlib.Path(tempfile.mkdtemp())
         self.advice = CachingAdvice(self.cache_dir)
         task = Task.create_task(task_function)
         task.task_id = 't'
-        self.session = Session(task, Execution('r'), configuration)
+        self.session = Session(task, Execution('r'), self.configuration)
         self.session.proceed = lambda: None
 
     def tearDown(self):
@@ -36,12 +37,24 @@ class TestCachingAdvice(unittest.TestCase):
         self.assertFalse(cache_item_path.is_file())
 
         self.advice.before(self.session)
-        self.session.result = 'My result'
+        self.session.result = Result(value='My result')
         self.advice.after(self.session)
 
         self.assertTrue(cache_item_path.exists())
         self.assertTrue(cache_item_path.is_file())
-        self.assertEqual(cache_item_path.open('r').read(), '"My result"')
+        stored_result = self.session.serializer.deserialize(cache_item_path.open('rb'))
+        self.assertEqual(Result(value="My result"), stored_result)
+
+    def test_exceptions_in_results_are_not_cached(self):
+        cache_item_path = self.cache_dir / 't' / 'r'
+        self.assertFalse(cache_item_path.exists())
+        self.assertFalse(cache_item_path.is_file())
+
+        self.advice.before(self.session)
+        self.session.result = Result(exception=Exception('error'))
+        self.advice.after(self.session)
+
+        self.assertFalse(cache_item_path.exists())
 
     def test_dont_store_again_if_exists(self):
         cache_item_path = self.cache_dir / 't' / 'r'
@@ -49,15 +62,32 @@ class TestCachingAdvice(unittest.TestCase):
         self.assertFalse(cache_item_path.is_file())
 
         self.advice.before(self.session)
-        self.session.result = 'My result'
+        self.session.result = Result(value='My result')
         self.advice.after(self.session)
 
-        self.session.result = 'My other result'
+        self.session.result = Result(value='My other result')
         self.advice.after(self.session)
 
         self.assertTrue(cache_item_path.exists())
         self.assertTrue(cache_item_path.is_file())
-        self.assertEqual(cache_item_path.open('r').read(), '"My result"')
+        stored_result = self.session.serializer.deserialize(cache_item_path.open('rb'))
+        self.assertEqual(Result(value="My result"), stored_result)
+
+    def test_dont_store_if_cache_is_disabled(self):
+        task = Task.create_task(task_function, {'cache': False})
+        task.task_id = 't'
+        self.session = Session(task, Execution('r'), self.configuration)
+        self.session.proceed = lambda: None
+
+        cache_item_path = self.cache_dir / 't' / 'r'
+        self.assertFalse(cache_item_path.exists())
+        self.assertFalse(cache_item_path.is_file())
+
+        self.advice.before(self.session)
+        self.session.result = Result(value='My result')
+        self.advice.after(self.session)
+
+        self.assertFalse(cache_item_path.exists())
 
     def test_dont_create_cache_directory_again_if_exists(self):
         cache_item_path = self.cache_dir / 't' / 'r'
@@ -65,7 +95,7 @@ class TestCachingAdvice(unittest.TestCase):
         self.assertFalse(cache_item_path.is_file())
 
         self.advice.before(self.session)
-        self.session.result = 'My result'
+        self.session.result = Result(value='My result')
         self.advice.after(self.session)
 
         cache_task_path = self.cache_dir / 't'
@@ -77,7 +107,7 @@ class TestCachingAdvice(unittest.TestCase):
         self.session.execution = Execution('s')
 
         self.advice.before(self.session)
-        self.session.result = 'My other result'
+        self.session.result = Result(value='My other result')
         self.advice.after(self.session)
 
         self.assertTrue(cache_execution_path.exists())

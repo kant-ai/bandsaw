@@ -27,7 +27,10 @@ class CachingAdvice(Advice):
 
         cache_item_path = self.directory / artifact_id / revision_id
         session.context['cache-item-path'] = str(cache_item_path)
-        if cache_item_path.exists():
+        if (
+            session.task.advice_parameters.get('cache', True)
+            and cache_item_path.exists()
+        ):
             logger.info("Using result from cache '%s'", cache_item_path)
 
             with open(cache_item_path, 'rb') as stream:
@@ -37,14 +40,18 @@ class CachingAdvice(Advice):
         session.proceed()
 
     def after(self, session):
-        cache_item_path = pathlib.Path(session.context['cache-item-path'])
-        if not cache_item_path.exists():
-            cache_item_directory = cache_item_path.parent
-            if not cache_item_directory.exists():
-                cache_item_directory.mkdir(parents=True)
+        if session.result.value:
+            cache_item_path = pathlib.Path(session.context['cache-item-path'])
+            if (
+                session.task.advice_parameters.get('cache', True)
+                and not cache_item_path.exists()
+            ):
+                cache_item_directory = cache_item_path.parent
+                if not cache_item_directory.exists():
+                    cache_item_directory.mkdir(parents=True)
 
-            logger.info("Storing result in cache '%s'", cache_item_path)
+                logger.info("Storing result in cache '%s'", cache_item_path)
 
-            with open(cache_item_path, 'wb') as stream:
-                session.serializer.serialize(session.result, stream)
+                with open(cache_item_path, 'wb') as stream:
+                    session.serializer.serialize(session.result, stream)
         session.proceed()
