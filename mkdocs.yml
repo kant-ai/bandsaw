@@ -17,6 +17,7 @@ nav:
   - Extensions:
     - Interface: extensions/extension.md
     - Tracker: extensions/tracker.md
+    - Timestamps: extensions/timestamps.md
   - FAQ: faq.md
   - Changelog: changelog.md
   - API: api.md
