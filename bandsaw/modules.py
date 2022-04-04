@@ -85,7 +85,7 @@ def get_loaded_module_name_by_path(file_path):
     """
     real_path = os.path.realpath(file_path)
     for name, module in sys.modules.items():
-        if hasattr(module, '__file__'):
+        if hasattr(module, '__file__') and module.__file__:
             module_path = os.path.realpath(module.__file__)
             if module_path == real_path:
                 return name
