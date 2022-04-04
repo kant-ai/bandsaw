@@ -5,6 +5,7 @@ from .decorator import task
 from .extensions import Extension
 from .identifier import identifier_from_string
 from .interpreter import Interpreter
+from .run import get_run_id, set_run_id
 from .serialization import (
     JsonSerializer,
     PickleSerializer,
