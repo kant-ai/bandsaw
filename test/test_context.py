@@ -87,6 +87,13 @@ class TestContext(unittest.TestCase):
 
         self.assertEqual(context.attributes['parent']['value'], 1)
 
+    def test_context_value_info_uses_standard_dicts(self):
+        context = Context()
+        context['parent']['value'] = 1
+
+        result = context.value_info()
+        self.assertEqual({'parent': {'value': 1}}, result)
+
 
 if __name__ == '__main__':
     unittest.main()

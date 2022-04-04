@@ -70,3 +70,19 @@ class Context(collections.abc.MutableMapping, SerializableValue):
         if not isinstance(other, type(self)):
             return False
         return self._attributes == other._attributes
+
+    def value_info(self):
+        """
+        Information about a context.
+
+        The information contains all values in hierarchical dicts.
+
+        Returns:
+            Dict[str,str]: A dictionary containing the contexts keys and values.
+        """
+        value_info = {}
+        for key, value in self.items():
+            if isinstance(value, Context):
+                value = value.value_info()
+            value_info[key] = value
+        return value_info
