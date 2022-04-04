@@ -50,7 +50,7 @@ class TestTrackerExtension(unittest.TestCase):
         self.assertEqual(session.ids, ids)
         self.assertIsInstance(task_info, dict)
         self.assertEqual({
-            'id': 'f751aa54092bf4890353',
+            'id': 'f751aa54092bf489',
             'definition': 'test_tracking.test_tracker.my_function',
             'advice_parameters': {},
         }, task_info['task'])

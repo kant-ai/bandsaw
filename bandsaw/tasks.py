@@ -3,7 +3,7 @@ import abc
 import inspect
 import types
 
-from .identifier import identifier_from_bytes, identifier_from_string
+from .identifier import identifier_from_string
 from .modules import object_as_import, import_object
 from .result import Result
 from .serialization import SerializableValue
@@ -23,8 +23,10 @@ class Task(SerializableValue, abc.ABC):
     # For different types of callable
     # https://stackoverflow.com/questions/19314405/how-to-detect-is-decorator-has-been-applied-to-method-or-function
 
-    def __init__(self, task_id, advice_parameters):
-        self.task_id = task_id
+    def __init__(self, id_tuple, advice_parameters):
+        if 'version' in advice_parameters:
+            id_tuple += (advice_parameters['version'],)
+        self.task_id = identifier_from_string(repr(id_tuple))
         self._advice_parameters = advice_parameters
 
     @property
@@ -117,9 +119,8 @@ class _FunctionTask(Task):
     def __init__(self, function_name, module_name, advice_parameters):
         self.function_name = function_name
         self.module_name = module_name
-        value = (self.function_name, self.module_name)
-        task_id = identifier_from_string(repr(value))
-        super().__init__(task_id, advice_parameters)
+        id_tuple = (self.function_name, self.module_name)
+        super().__init__(id_tuple, advice_parameters)
 
     @property
     def function(self):
@@ -173,7 +174,7 @@ class _FunctionWithClosureTask(Task):
 
     def __init__(self, function, advice_parameters):
         self.function = function
-        super().__init__(identifier_from_bytes(self.bytecode), advice_parameters)
+        super().__init__((self.bytecode,), advice_parameters)
 
     @property
     def source(self):

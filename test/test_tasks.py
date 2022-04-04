@@ -28,7 +28,7 @@ class TestTask(unittest.TestCase):
 
     def test_create_task_handles_free_function(self):
         task = Task.create_task(free_function)
-        self.assertEqual('8cecc949e9edc5293ffc', task.task_id)
+        self.assertEqual('8cecc949e9edc529', task.task_id)
 
         result = task._execute([], {})
         self.assertEqual('free-function', result)
@@ -38,6 +38,11 @@ class TestTask(unittest.TestCase):
 
         bytecode = task.bytecode
         self.assertEqual(bytecode, b'd\x01S\x00')
+
+    def test_task_id_depends_on_version_if_set(self):
+        task_v1 = Task.create_task(free_function, {'version': 1})
+        task_v2 = Task.create_task(free_function, {'version': 2})
+        self.assertNotEqual(task_v1.task_id, task_v2.task_id)
 
     def test_task_signature_from_free_function(self):
         task = Task.create_task(function_with_arguments)
@@ -75,7 +80,7 @@ class TestTask(unittest.TestCase):
             return 'local-function'
 
         task = Task.create_task(local_function)
-        self.assertEqual('71b50995b93786bb8d57', task.task_id)
+        self.assertEqual('e7aebae114ea18ea', task.task_id)
 
         result = task._execute(['a'], {})
         self.assertEqual('local-function', result)

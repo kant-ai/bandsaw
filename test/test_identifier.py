@@ -17,13 +17,14 @@ class TestIdentifierFromString(unittest.TestCase):
 
         self.assertEqual(len(identifier), 20)
         del os.environ['BANDSAW_ID_LENGTH']
+        importlib.reload(bandsaw.identifier)
 
     def test_single_value(self):
         values = {
             'a': 1,
         }
         identifier = identifier_from_string(json.dumps(values))
-        self.assertEqual(identifier, 'f9d86028c6e0d64e2251')
+        self.assertEqual(identifier, 'f9d86028c6e0d64e')
 
     def test_equal_instances_have_same_identifier(self):
         values1 = {
