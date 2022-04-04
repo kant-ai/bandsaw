@@ -46,12 +46,10 @@ class Context(collections.abc.MutableMapping, SerializableValue):
         return self._attributes
 
     def __getitem__(self, key):
-        if key in self._attributes:
-            return self._attributes[key]
-        else:
+        if key not in self._attributes:
             child_context = Context()
             self._attributes[key] = child_context
-            return child_context
+        return self._attributes[key]
 
     def __setitem__(self, key, item):
         if key in self._attributes:
