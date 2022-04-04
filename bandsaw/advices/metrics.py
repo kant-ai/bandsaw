@@ -36,6 +36,7 @@ class MetricsAdvice(Advice):
         else:
             self._directory = None
         self._file_format = file_format
+        self._measurements = {}
 
     def before(self, session):
         tags = {
@@ -50,14 +51,14 @@ class MetricsAdvice(Advice):
 
         logger.info("Measurement id %s with tags %s", session.session_id, tags)
         measurement = self._multimeter.measure(session.session_id, **tags)
-        session.context['metrics.measurement'] = measurement
+        self._measurements[session.session_id] = measurement
 
         logger.debug("Measurement start")
         measurement.start()
         session.proceed()
 
     def after(self, session):
-        measurement = session.context.pop('metrics.measurement')
+        measurement = self._measurements.pop(session.session_id)
         logger.debug("Measurement end")
         measurement.end()
 

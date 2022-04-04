@@ -5,6 +5,7 @@ import unittest
 
 from bandsaw.advices.cache import CachingAdvice
 from bandsaw.config import Configuration
+from bandsaw.context import Context
 from bandsaw.result import Result
 from bandsaw.serialization.json import JsonSerializer
 from bandsaw.session import Session
@@ -105,6 +106,7 @@ class TestCachingAdvice(unittest.TestCase):
         self.assertFalse(cache_execution_path.exists())
 
         self.session.execution = Execution('s')
+        self.session.context = Context()
 
         self.advice.before(self.session)
         self.session.result = Result(value='My other result')

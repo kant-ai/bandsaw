@@ -8,6 +8,7 @@ import pathlib
 import zipfile
 
 from .config import get_configuration
+from .context import Context
 from .distribution import get_distribution_archive
 from .run import get_run_id
 from .serialization import SerializableValue
@@ -227,7 +228,7 @@ class Session:
         """
         self.task = task
         self.execution = execution
-        self.context = {}
+        self.context = Context()
         self.result = None
         self.attachments = Attachments()
         self.configuration = configuration
