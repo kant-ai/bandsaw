@@ -55,7 +55,7 @@ class TrackerExtension(Extension):
 
     def _track_run(self, session):
         if session.run_id not in self._tracked_runs:
-            self._backend.track_run(session.ids, {'id': session.run_id})
+            self._backend.track_run(session.ids, session.run.to_json())
             self._tracked_runs.add(session.run_id)
 
     def _track_task(self, session):

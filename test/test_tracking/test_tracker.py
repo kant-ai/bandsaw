@@ -35,6 +35,11 @@ class TestTrackerExtension(unittest.TestCase):
         self.assertEqual(session.ids, ids)
         self.assertIsInstance(run_info, dict)
         self.assertIn('id', run_info)
+        self.assertIn('start_date', run_info)
+        self.assertIn('user', run_info)
+        self.assertIn('command', run_info)
+        self.assertIn('env', run_info)
+        self.assertIn('meta', run_info)
 
     def test_tracker_on_session_created_tracks_run_only_once(self):
         session = Session(Task.create_task(my_function), Execution('e', ['arg']), Configuration())
