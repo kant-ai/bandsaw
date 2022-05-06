@@ -11,3 +11,16 @@ def current_timestamp():
     """
     timestamp = datetime.datetime.now(datetime.timezone.utc)
     return timestamp.isoformat(timespec='milliseconds')
+
+
+def datetime_from_timestamp(timestamp):
+    """
+    Parse a timestamp string to datetime.
+
+    Args:
+        timestamp (str): A timestamp as string.
+
+    Returns:
+        datetime.datetime: A datetime instance of the timestamp.
+    """
+    return datetime.datetime.fromisoformat(timestamp)
