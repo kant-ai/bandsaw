@@ -1,12 +1,6 @@
 """Collect timestamps for individual phases of a session."""
-import datetime
-
+from bandsaw.datetime import current_timestamp
 from bandsaw.extensions import Extension
-
-
-def _current_timestamp():
-    timestamp = datetime.datetime.now(datetime.timezone.utc)
-    return timestamp.isoformat(timespec='milliseconds')
 
 
 class TimestampsExtension(Extension):
@@ -24,13 +18,13 @@ class TimestampsExtension(Extension):
     """
 
     def on_session_created(self, session):
-        session.context['timestamps']['session_created'] = _current_timestamp()
+        session.context['timestamps']['session_created'] = current_timestamp()
 
     def on_session_finished(self, session):
-        session.context['timestamps']['session_finished'] = _current_timestamp()
+        session.context['timestamps']['session_finished'] = current_timestamp()
 
     def on_before_task_executed(self, session):
-        session.context['timestamps']['before_task'] = _current_timestamp()
+        session.context['timestamps']['before_task'] = current_timestamp()
 
     def on_after_task_executed(self, session):
-        session.context['timestamps']['after_task'] = _current_timestamp()
+        session.context['timestamps']['after_task'] = current_timestamp()
