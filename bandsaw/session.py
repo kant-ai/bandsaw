@@ -10,7 +10,7 @@ import zipfile
 from .config import get_configuration
 from .context import Context
 from .distribution import get_distribution_archive
-from .run import get_run_id
+from .run import get_run, get_run_id, Run
 from .serialization import SerializableValue
 
 
@@ -236,6 +236,7 @@ class Session:
         self._moderator = None
         self._ids = None
         self._temp_dir = None
+        self._run = None
 
     def initiate(self):
         """
@@ -296,6 +297,13 @@ class Session:
     def run_id(self):
         """The run id of the workflow."""
         return get_run_id()
+
+    @property
+    def run(self):
+        """The run of the workflow."""
+        if not self._run:
+            self._run = get_run()
+        return self._run
 
     @property
     def temp_dir(self):
@@ -368,6 +376,9 @@ class Session:
         self._advice_chain = session_json['advice_chain']
         self._ids = Ids.from_string(session_json['ids'])
 
+        run_json = json.loads(archive.read('run.json'))
+        self._run = Run.from_json(run_json)
+
         serializer = self.configuration.serializer
 
         stream = io.BytesIO(archive.read('task.dat'))
@@ -403,6 +414,9 @@ class Session:
                 }
             )
             archive.writestr('session.json', session_json)
+
+            run_json = json.dumps(self.run.to_json())
+            archive.writestr('run.json', run_json)
 
             stream = io.BytesIO()
             serializer.serialize(self.task, stream)

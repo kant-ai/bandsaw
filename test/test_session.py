@@ -242,6 +242,11 @@ class TestSession(unittest.TestCase):
             session = Session(execution=Execution('1'), configuration=self.config)
             session.session_id
 
+    def test_session_contains_run(self):
+        session = Session(MyTask(), Execution('1'), self.config)
+        run = session.run
+        self.assertIsNotNone(run)
+
     def test_empty_advice_returns_execution_result(self):
         session = Session(MyTask(), Execution('1'), self.config)
         result = session.initiate()
@@ -362,6 +367,31 @@ class TestSession(unittest.TestCase):
             self.assertEqual(
                 session.session_id,
                 restored_session.session_id,
+            )
+
+    def test_restored_session_contains_same_run(self):
+        with unittest.mock.patch("bandsaw.session.get_configuration", return_value=self.config):
+            session = Session(MyTask(), Execution('1'), self.config)
+            session.attachments['my.attachment'] = __file__
+            session.run.meta['my'] = 'meta'
+
+            stream = io.BytesIO()
+            session.save(stream)
+            stream.seek(0)
+
+            restored_session = Session().restore(stream)
+
+            self.assertEqual(
+                session.run.run_id,
+                restored_session.run.run_id,
+            )
+            self.assertEqual(
+                session.run.start_date,
+                restored_session.run.start_date,
+            )
+            self.assertEqual(
+                session.run.meta,
+                restored_session.run.meta,
             )
 
     def test_session_runs_parts_in_new_thread(self):
