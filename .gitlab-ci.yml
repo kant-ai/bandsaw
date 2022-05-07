@@ -19,9 +19,10 @@ test:
     - pip --quiet install tox
     - tox
   artifacts:
-    coverage_report:
-      coverage_format: cobertura
-      path: coverage.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
 
 pypi:
   stage: deploy
