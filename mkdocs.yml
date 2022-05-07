@@ -66,6 +66,6 @@ extra:
 copyright: Copyright &copy; 2021 Kantai GmbH
 
 plugins:
-  - git-revision-date
+#  - git-revision-date
   - mkdocstrings
   - search
