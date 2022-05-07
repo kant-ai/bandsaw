@@ -9,7 +9,7 @@ stages:
 build docs:
   stage: build
   script:
-    - git config --local --add safe.directory /builds/kantai/bandsaw
+    - git config --global --add safe.directory $(pwd)
     - pip --quiet install tox
     - tox -e docs
 
